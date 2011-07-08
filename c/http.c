@@ -23,12 +23,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifndef _MSC_VER
 #include <sys/socket.h>
 #include <netdb.h>
+#endif
+
 #include <time.h>
 
 #ifndef HAVE_GETADDRINFO

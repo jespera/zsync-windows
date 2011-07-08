@@ -1,0 +1,10 @@
+#include <netdb.h>
+#include <stdio.h>
+
+int main(int argc, char* argv[]) {
+  extern int h_errrnos;
+  
+  printf("%d", h_errnos);
+  return 0;
+}
+
