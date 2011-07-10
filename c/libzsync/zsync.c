@@ -42,7 +42,9 @@
 #include <ctype.h>
 #include <time.h>
 
-#include <arpa/inet.h>
+#ifndef WIN32
+# include <arpa/inet.h>
+#endif
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>

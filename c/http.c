@@ -24,15 +24,18 @@
 #include <string.h>
 #include <errno.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef _MSC_VER
-#include <sys/socket.h>
-#include <netdb.h>
+#if defined(_MSC_VER) || defined(__MINGW32__)
+# undef socklen_t
+# include <ws2tcpip.h>
+#else
+# include <sys/socket.h>
+# include <netdb.h>
 #endif
 
 #include <time.h>

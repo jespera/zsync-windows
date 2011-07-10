@@ -25,9 +25,10 @@ endif(CMAKE_COMPILER_IS_GNUC)
 add_definitions(${ZSCFLAGS})
 
 if(WIN32)
-  set(SOCKET_LIBRARY ws2_32) # Winsock 2 -- wsock32??? (that's Winsock 1.1, but it's what configure.ac said for mingw32?
+  #set(SOCKET_LIBRARY ws2_32) # Winsock 2 -- wsock32??? (that's Winsock 1.1, but it's what configure.ac said for mingw32?
+  find_library(SOCKET_LIBRARY ws2_32)
 elseif(CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)" )
-  set(SOCKET_LIBRARY socket)
+  find_library(SOCKET_LIBRARY socket)
 endif(WIN32)
 
 set(CMAKE_REQUIRED_LIBRARIES ${SOCKET_LIBRARY})
@@ -44,7 +45,7 @@ endif(MSVC)
 
 check_function_exists(getaddrinfo HAVE_GETADDRINFO)
 check_include_file(inttypes.h HAVE_INTTYPES_H)
-find_library(socket LIBSOCKET_FOUND)
+find_library(LIBSOCKET_FOUND socket)
 if(LIBSOCKET_FOUND)
   set(HAVE_LIBSOCKET 1)
 endif(LIBSOCKET_FOUND)
@@ -135,16 +136,19 @@ add_subdirectory(libzsync)
 
 include_directories(librcksum zlib libzsync ${zsync_SOURCE_DIR})
 
-add_executable(zsyncmake make.c makegz.c makegz.h format_string.h)
-target_link_libraries(zsyncmake zsynclib rcksum inflate deflate ${MATH_LIBRARY})
+if(WIN32)
+  set(WIN32_SOURCES win32.h win32.c)
+endif(WIN32)
+
+add_executable(zsyncmake make.c makegz.c makegz.h format_string.h ${WIN32_SOURCES})
+target_link_libraries(zsyncmake zsynclib rcksum inflate deflate ${MATH_LIBRARY} ${SOCKET_LIBRARY})
 
 if(NOT HAVE_GETADDRINFO)
   set(GETTADDRINFO_SOURCES getaddrinfo.h getaddrinfo.c)
 endif(NOT HAVE_GETADDRINFO)
 
-add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES})
-target_link_libraries(zsync zsynclib rcksum inflate deflate ${MATH_LIBRARY})
-
+add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
+target_link_libraries(zsync zsynclib rcksum inflate deflate ${MATH_LIBRARY} ${SOCKET_LIBRARY})
 
 #X_C_COMPILE_FLAGS($ZS_CFLAGS -g -Wall -Wwrite-strings -Winline -Wextra -Winline -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wundef -Wbad-function-cast -Wcast-align -Wvolatile-register-var -ffast-math)
 

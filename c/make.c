@@ -27,7 +27,13 @@
 #include <math.h>
 #include <time.h>
 
-#include <arpa/inet.h>
+#ifdef WIN32
+# undef socklen_t
+# include <ws2tcpip.h>
+#else
+# include <arpa/inet.h>
+#endif
+
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
 #endif

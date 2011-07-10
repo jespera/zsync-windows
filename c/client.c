@@ -657,6 +657,9 @@ int main(int argc, char **argv) {
                If that fails due to EPERM, it is probably a filesystem that
                doesn't support hard-links - so try just renaming it to the
                backup filename. */
+            #ifdef WIN32
+            ok = 0;
+            #else
             if (link(filename, oldfile_backup) != 0
                 && (errno != EPERM || rename(filename, oldfile_backup) != 0)) {
                 perror("linkname");
@@ -665,6 +668,7 @@ int main(int argc, char **argv) {
                         filename, temp_file);
                 ok = 0;         /* Prevent overwrite of old file below */
             }
+            #endif
         }
         if (ok) {
             /* Rename the file to the desired name */
