@@ -586,6 +586,19 @@ int main(int argc, char **argv) {
     char *gzopts = NULL;
     time_t mtime = -1;
 
+#ifdef WIN32
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int err;
+
+    wVersionRequested = MAKEWORD(2,2);
+    err = WSAStartup(wVersionRequested, &wsaData);
+    if(err !=0) {
+        printf("WSAStartup failed with error: %d\n", err);
+        exit(1);
+    }
+#endif
+
     /* Open temporary file */
     FILE *tf = tmpfile();
 
@@ -904,6 +917,10 @@ int main(int argc, char **argv) {
     /* And cleanup */
     fclose(tf);
     fclose(fout);
+
+#ifdef WIN32
+    WSACleanup();
+#endif
 
     return 0;
 }

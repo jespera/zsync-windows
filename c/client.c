@@ -36,6 +36,10 @@
 # include <dmalloc.h>
 #endif
 
+#ifdef WIN32
+# include <winsock2.h>
+#endif
+
 #include "libzsync/zsync.h"
 
 #include "http.h"
@@ -459,6 +463,20 @@ int main(int argc, char **argv) {
     time_t mtime;
 
     srand(getpid());
+
+#ifdef WIN32
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int err;
+
+    wVersionRequested = MAKEWORD(2,2);
+    err = WSAStartup(wVersionRequested, &wsaData);
+    if(err !=0) {
+        printf("WSAStartup failed with error: %d\n", err);
+        exit(1);
+    }
+#endif
+
     {   /* Option parsing */
         int opt;
 
@@ -697,5 +715,10 @@ int main(int argc, char **argv) {
         printf("used %lld local, fetched %lld\n", local_used, http_down);
     free(referer);
     free(temp_file);
+
+#ifdef WIN32
+    WSACleanup();
+#endif
+
     return 0;
 }
