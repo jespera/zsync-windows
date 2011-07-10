@@ -29,6 +29,7 @@
 
 #ifdef WIN32
 # undef socklen_t
+# include <windows.h>
 # include <ws2tcpip.h>
 #else
 # include <arpa/inet.h>
@@ -851,8 +852,37 @@ int main(int argc, char **argv) {
             struct tm mtime_tm;
 
             if (gmtime_r(&mtime, &mtime_tm) != NULL) {
-                if (strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %z", &mtime_tm) > 0)
+                size_t nc = 0;
+#ifdef WIN32
+                /*
+                  strftime from MSVCRT is broken in regards to the timezone (%z),
+                  see http://permalink.gmane.org/gmane.comp.gnu.mingw.user/20292
+                  This is a workaround per above thread
+                  */
+
+                char tmp[32];
+                nc = strftime(tmp, sizeof tmp, "%a, %d %b %Y %H:%M:%S", &mtime_tm);
+
+                TIME_ZONE_INFORMATION info;
+                GetTimeZoneInformation(&info);
+                int bias = - info.Bias + info.DaylightBias; // Difference to UTC + DST
+                int hh = bias / 60;
+                int mm = bias % 60; /* warning: modulus operation with negative numbers is not portable */
+
+                /* now append hhmm to the strftime()ed string */
+                /* GNU strftime considers %z = 00:00 to be positive, that's why "+00 00" instead of "-00 00" */
+                sprintf(buf, "%s %c%02d%02d", tmp, (bias < 0 ? '-' : '+') , hh, mm);
+                nc+=6; /* We've written 6 more characters with sprintf */
+                if(nc > 31) {  /* if we are out of the 32 allocated characters, we set result to 0, */
+                    nc = 0;    /* like strftime does when the result does not fit the buffer */
+                }
+
+#else
+                nc = strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %z", &mtime_tm);
+#endif
+                if ( nc > 0) {
                     fprintf(fout, "MTime: %s\n", buf);
+                }
             }
             else {
                 fprintf(stderr, "error converting %d to struct tm\n", mtime);
