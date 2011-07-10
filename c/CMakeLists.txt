@@ -27,6 +27,7 @@ add_definitions(${ZSCFLAGS})
 if(WIN32)
   #set(SOCKET_LIBRARY ws2_32) # Winsock 2 -- wsock32??? (that's Winsock 1.1, but it's what configure.ac said for mingw32?
   find_library(SOCKET_LIBRARY ws2_32)
+  set(SOCKET_LIBRARY ${SOCKET_LIBRARY} ws2_32) # Why is this necessary on MinGW!?
 elseif(CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)" )
   find_library(SOCKET_LIBRARY socket)
 endif(WIN32)
@@ -141,14 +142,14 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(zsyncmake make.c makegz.c makegz.h format_string.h ${WIN32_SOURCES})
-target_link_libraries(zsyncmake zsynclib rcksum inflate deflate ${MATH_LIBRARY} ${SOCKET_LIBRARY})
+target_link_libraries(zsyncmake zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY})
 
 if(NOT HAVE_GETADDRINFO)
   set(GETTADDRINFO_SOURCES getaddrinfo.h getaddrinfo.c)
 endif(NOT HAVE_GETADDRINFO)
 
 add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
-target_link_libraries(zsync zsynclib rcksum inflate deflate ${MATH_LIBRARY} ${SOCKET_LIBRARY})
+target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY})
 
 #X_C_COMPILE_FLAGS($ZS_CFLAGS -g -Wall -Wwrite-strings -Winline -Wextra -Winline -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wundef -Wbad-function-cast -Wcast-align -Wvolatile-register-var -ffast-math)
 
