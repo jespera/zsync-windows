@@ -16,7 +16,11 @@
 #include <inttypes.h>
 
 #ifdef PRIu32
-# define SIZE_T_PF "%zd"
+# ifdef __MINGW32__ // All Win32?
+#  define SIZE_T_PF "%lu"
+# else
+#  define SIZE_T_PF "%zd"
+# endif
 #else
 # define SIZE_T_PF "%u"
 #endif
