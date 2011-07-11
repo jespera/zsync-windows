@@ -5,49 +5,49 @@
 #endif
 
 /* Define to 1 if you have the `getaddrinfo' function. */
-#cmakedefine01 HAVE_GETADDRINFO
+#cmakedefine HAVE_GETADDRINFO
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#cmakedefine01 HAVE_INTTYPES_H
+#cmakedefine HAVE_INTTYPES_H
 
 /* Define to 1 if you have the `socket' library (-lsocket). */
-#cmakedefine01 HAVE_LIBSOCKET
+#cmakedefine HAVE_LIBSOCKET
 
 /* Define to 1 if you have the `memcpy' function. */
-#cmakedefine01 HAVE_MEMCPY
+#cmakedefine HAVE_MEMCPY
 
 /* Define to 1 if you have the <memory.h> header file. */
-#cmakedefine01 HAVE_MEMORY_H
+#cmakedefine HAVE_MEMORY_H
 
 /* Define to 1 if you have the `mkstemp' function. */
-#cmakedefine01 HAVE_MKSTEMP
+#cmakedefine HAVE_MKSTEMP
 
 /* Define to 1 if you have the `pread' function. */
-#cmakedefine01 HAVE_PREAD
+#cmakedefine HAVE_PREAD
 
 /* Define to 1 if you have the `pwrite' function. */
-#cmakedefine01 HAVE_PWRITE
+#cmakedefine HAVE_PWRITE
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine01 HAVE_STDINT_H
+#cmakedefine HAVE_STDINT_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#cmakedefine01 HAVE_STDLIB_H
+#cmakedefine HAVE_STDLIB_H
 
 /* Define to 1 if you have the <strings.h> header file. */
-#cmakedefine01 HAVE_STRINGS_H
+#cmakedefine HAVE_STRINGS_H
 
 /* Define to 1 if you have the <string.h> header file. */
-#cmakedefine01 HAVE_STRING_H
+#cmakedefine HAVE_STRING_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#cmakedefine01 HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_STAT_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#cmakedefine01 HAVE_SYS_TYPES_H
+#cmakedefine HAVE_SYS_TYPES_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#cmakedefine01 HAVE_UNISTD_H
+#cmakedefine HAVE_UNISTD_H
 
 /* Define to 1 if `h_errno' is declared by <netdb.h> */
 #undef H_ERRNO_DECLARED

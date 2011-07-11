@@ -26,7 +26,7 @@ add_definitions(${ZSCFLAGS})
 
 if(WIN32)
   #set(SOCKET_LIBRARY ws2_32) # Winsock 2 -- wsock32??? (that's Winsock 1.1, but it's what configure.ac said for mingw32?
-  find_library(SOCKET_LIBRARY ws2_32)
+#  find_library(SOCKET_LIBRARY ws2_32)
   set(SOCKET_LIBRARY ${SOCKET_LIBRARY} ws2_32) # Why is this necessary on MinGW!?
 elseif(CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)" )
   find_library(SOCKET_LIBRARY socket)

@@ -129,7 +129,7 @@ int mkstemp (char *tmpl);
  *****************************************************************************/
 
 ssize_t pread (int fd, void *buf, size_t count, off_t offset);
-ssize_t pwrite(int fd, const void * buf, size_t size, off_t offset);
+/* ssize_t pwrite(int fd, const void * buf, size_t size, off_t offset); */
 
 /*****************************************************************************
  * gmtime_r.c: POSIX gmtime_r() replacement
