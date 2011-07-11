@@ -1,56 +1,57 @@
-#cmakedefine HAVE_FSEEKO
+#cmakedefine HAVE_FSEEKO 1
 
+#cmakedefine FSEEKO_REPLACEMENT 1
 #ifdef FSEEKO_REPLACEMENT
 #  define fseeko @FSEEKO_REPLACEMENT@
 #endif
 
 /* Define to 1 if you have the `getaddrinfo' function. */
-#cmakedefine HAVE_GETADDRINFO
+#cmakedefine HAVE_GETADDRINFO 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#cmakedefine HAVE_INTTYPES_H
+#cmakedefine HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the `socket' library (-lsocket). */
-#cmakedefine HAVE_LIBSOCKET
+#cmakedefine HAVE_LIBSOCKET 1
 
 /* Define to 1 if you have the `memcpy' function. */
-#cmakedefine HAVE_MEMCPY
+#cmakedefine HAVE_MEMCPY 1
 
 /* Define to 1 if you have the <memory.h> header file. */
-#cmakedefine HAVE_MEMORY_H
+#cmakedefine HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the `mkstemp' function. */
-#cmakedefine HAVE_MKSTEMP
+#cmakedefine HAVE_MKSTEMP 1
 
 /* Define to 1 if you have the `pread' function. */
-#cmakedefine HAVE_PREAD
+#cmakedefine HAVE_PREAD 1
 
 /* Define to 1 if you have the `pwrite' function. */
-#cmakedefine HAVE_PWRITE
+#cmakedefine HAVE_PWRITE 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine HAVE_STDINT_H
+#cmakedefine HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#cmakedefine HAVE_STDLIB_H
+#cmakedefine HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-#cmakedefine HAVE_STRINGS_H
+#cmakedefine HAVE_STRINGS_H 1
 
 /* Define to 1 if you have the <string.h> header file. */
-#cmakedefine HAVE_STRING_H
+#cmakedefine HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#cmakedefine HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#cmakedefine HAVE_SYS_TYPES_H
+#cmakedefine HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#cmakedefine HAVE_UNISTD_H
+#cmakedefine HAVE_UNISTD_H 1
 
 /* Define to 1 if `h_errno' is declared by <netdb.h> */
-#undef H_ERRNO_DECLARED
+/* #undef H_ERRNO_DECLARED */
 
 /* Name of package */
 #define PACKAGE "@PACKAGE@"
@@ -86,7 +87,7 @@
 #define VERSION "@VERSION@"
 
 /* Define if using the dmalloc debugging malloc package */
-#cmakedefine WITH_DMALLOC
+#cmakedefine WITH_DMALLOC 1
 
 /* Enable BSD extensions if present */
 /* #undef _BSD_SOURCE */
@@ -110,17 +111,17 @@
    long' according with size of `sin_port' in `struct sockaddr_in', if
    <sys/types.h>, <sys/socket.h> or <netinet/in.h> does not define
    `in_port_t'. */
-#cmakedefine IN_PORT_T_REPLACEMENT
+#cmakedefine IN_PORT_T_REPLACEMENT 1
 #ifdef IN_PORT_T_REPLACEMENT
 #  define in_port_t @IN_PORT_T_REPLACEMENT@
 #endif
 
-#cmakedefine SIZE_T_REPLACEMENT
+#cmakedefine SIZE_T_REPLACEMENT 1
 #ifdef SIZE_T_REPLACEMENT
 #  define size_t @SIZE_T_REPLACEMENT@
 #endif
 
-#cmakedefine SOCKLEN_T_REPLACEMENT
+#cmakedefine SOCKLEN_T_REPLACEMENT 1
 #ifdef SOCKLEN_T_REPLACEMENT
 #  define socklen_t @SOCKLEN_T_REPLACEMENT@
 #endif
