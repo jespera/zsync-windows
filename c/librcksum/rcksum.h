@@ -17,15 +17,17 @@
 /* This is the library interface. Very changeable at this stage. */
 
 #include <stdio.h>
+#include "pack.h"
 
 struct rcksum_state;
 
 typedef int zs_blockid;
 
+PACK(
 struct rsum {
 	unsigned short	a;
 	unsigned short	b;
-} __attribute__((packed));
+});
 
 #define CHECKSUM_SIZE 16
 

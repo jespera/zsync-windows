@@ -14,11 +14,13 @@
  */
 
 #include "zsglobal.h"
+#include "pack.h"
 
+PACK(
 struct gzblock {
   uint16_t inbitoffset;
   uint16_t outbyteoffset;
-} __attribute__((packed));
+});
 
 #define GZB_NOTBLOCKSTART 0x8000
 
