@@ -34,7 +34,6 @@ endif(WIN32)
 
 set(CMAKE_REQUIRED_LIBRARIES ${SOCKET_LIBRARY})
 
-# TODO
 if(MSVC)
   check_function_exists(_fseeki64 HAVE_FSEEKO)
   if(HAVE_FSEEKO)
@@ -44,12 +43,29 @@ else(MSVC)
   check_function_exists(fseeko HAVE_FSEEKO)
 endif(MSVC)
 
-check_function_exists(getaddrinfo HAVE_GETADDRINFO)
+if(WIN32)
+  check_include_file(wspiapi.h HAVE_WSPIAPI_H)
+  if (NOT HAVE_WSPIAPI_H)
+    message(STATUS "WARNING: Without wspiapi.h, this build will only work on Windows XP and newer versions")
+  endif (NOT HAVE_WSPIAPI_H)
+  check_include_file(ws2tcpip.h HAVE_WS2TCPIP_H)
+  if (HAVE_WSPIAPI_H OR HAVE_WS2TCPIP_H)
+    set(HAVE_GETADDRINFO TRUE)
+    if(CMAKE_COMPILER_IS_GNUCC AND NOT HAVE_WSPIAPI) # MinGW version that does not yet provide wspiapi.h (no MinGW provides wspiapi.h so far, but just in case in the future they do)
+      add_definitions("-DWINVER=0x501") # MinGW assumes we are compiling for Windows NT 4.0 but in ws2tcpip.h defines getaddrinfo only for Windows XP and newer
+    endif(CMAKE_COMPILER_IS_GNUCC AND NOT HAVE_WSPIAPI)
+  endif (HAVE_WSPIAPI_H OR HAVE_WS2TCPIP_H)
+else(WIN32)
+  check_function_exists(getaddrinfo HAVE_GETADDRINFO)
+endif(WIN32)
+
 check_include_file(inttypes.h HAVE_INTTYPES_H)
+
 find_library(LIBSOCKET_FOUND socket)
 if(LIBSOCKET_FOUND)
   set(HAVE_LIBSOCKET 1)
 endif(LIBSOCKET_FOUND)
+
 check_function_exists(memcpy HAVE_MEMCPY)
 check_function_exists(mkstemp HAVE_MKSTEMP)
 check_function_exists(pread HAVE_PREAD)
