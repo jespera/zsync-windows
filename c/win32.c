@@ -477,7 +477,6 @@ struct tm *gmtime_r (const time_t *timep, struct tm *result)
 
 #endif
 
-
 SOCKET PASCAL w32_socket( int af, int type, int protocol )
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -555,6 +554,20 @@ struct MODE_TRANS
 };
 
 typedef struct MODE_TRANS MODE_TRANS;
+
+
+/*
+   Microsoft's (therefore MinGW's too) fdopen cannot open socket file
+   descriptors directly, which leads http_get_stream to crash.
+
+   It is possible to solve this issue by calling _open_osfhandle as an
+   intermediate step.
+
+   http://www.codeguru.com/forum/showthread.php?t=395678
+   http://msdn.microsoft.com/en-us/library/ms740096
+   http://oldwiki.mingw.org/index.php/sockets
+
+   */
 
 FILE* w32_fdopen( int their_fd, const char* their_mode )
 {

@@ -101,20 +101,6 @@ FILE *http_get_stream(int fd, int *code) {
     char buf[256];
     char *p;
 
-    /* FIXME MinGW native version crashes in the fgets below, the error seems 
-       to be on Windows it's not possible to read/write from a socket file descriptor, 
-       recv/send must be used. 
-       Also, closesocket() instead of close() to close the socket 
-       http://forums.tigsource.com/index.php?topic=19483.0 
-       http://msdn.microsoft.com/en-us/library/ms740121%28v=vs.85%29.aspx
-       Checked quickly in a dirty way and it works fine with recv and closesocket(), but this requires changing the signature of http_get_stream (must return a socket file descriptor, not a FILE*) and changing all the code in get_location_url, http_get and maybe more.
-       
-       http://www.codeguru.com/forum/showthread.php?t=395678
-       http://msdn.microsoft.com/en-us/library/ms740096
-       http://oldwiki.mingw.org/index.php/sockets
-       
-       */
-    
     if (fgets(buf, sizeof(buf), f) == NULL || memcmp(buf, "HTTP/1", 6) != 0
         || (p = strchr(buf, ' ')) == NULL) {
         *code = 0;
@@ -402,6 +388,7 @@ FILE *http_get(const char *orig_url, char **track_referer, const char *tfname) {
             }
             else if (code == 200) {     // Downloading whole file
                 /* Write new file (plus allow reading once we finish) */
+                // FIXME Win32 native version fails here because Microsoft's version of tmpfile() creates the file in C:\
                 g = fname ? fopen(fname, "w+") : tmpfile();
             }
             else if (code == 206 && fname) {    // Had partial content and server confirms not modified
