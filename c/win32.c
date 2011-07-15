@@ -20,7 +20,7 @@
 
 #include <time.h>
 #include <ctype.h>
-#include <string.h>
+#include <fcntl.h>
 
 // Implement strptime under windows
 static const char* kWeekFull[] = {
@@ -403,3 +403,267 @@ struct tm *gmtime_r (const time_t *timep, struct tm *result)
     return result;
 }
 #endif  // WIN32
+
+
+/*********************************************************************
+ *********************************************************************
+ *********************************************************************/
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//   w32util.c        Windows porting functions
+//////////////////////////////////////////////////////////////////////////////////////////
+// (c) Copyright "Fish" (David B. Trout), 2005-2009. Released under the Q Public License
+// (http://www.hercules-390.org/herclic.html) as modifications to Hercules.
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#if defined(DEBUG) || defined(_DEBUG)
+
+  #ifdef _MSC_VER
+
+    #define TRACE(...) \
+      do \
+      { \
+        IsDebuggerPresent() ? DebugTrace (__VA_ARGS__): \
+                              logmsg     (__VA_ARGS__); \
+      } \
+      while (0)
+
+    #undef ASSERT /* For VS9 2008 */
+    #define ASSERT(a) \
+      do \
+      { \
+        if (!(a)) \
+        { \
+          TRACE("HHCxx999W *** Assertion Failed! *** %s(%d); function: %s\n",__FILE__,__LINE__,__FUNCTION__); \
+          if (IsDebuggerPresent()) DebugBreak();   /* (break into debugger) */ \
+        } \
+      } \
+      while(0)
+
+  #else // ! _MSC_VER
+
+    #define TRACE logmsg
+
+    #define ASSERT(a) \
+      do \
+      { \
+        if (!(a)) \
+        { \
+          TRACE("HHCxx999W *** Assertion Failed! *** %s(%d)\n",__FILE__,__LINE__); \
+        } \
+      } \
+      while(0)
+
+  #endif // _MSC_VER
+
+  #define VERIFY  ASSERT
+
+#else // non-debug build...
+
+  #ifdef _MSVC_
+
+    #define TRACE       __noop
+    #undef ASSERT /* For VS9 2008 */
+    #define ASSERT(a)   __noop
+    #define VERIFY(a)   ((void)(a))
+
+  #else // ! _MSVC_
+
+    #define TRACE       1 ? ((void)0) : logmsg
+    #define ASSERT(a)
+    #define VERIFY(a)   ((void)(a))
+
+  #endif // _MSVC_
+
+#endif
+
+
+SOCKET PASCAL w32_socket( int af, int type, int protocol )
+{
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    //                         PROGRAMMING NOTE
+    //
+    // We need to request that all sockets we create [via the 'socket()' API]
+    // be created WITHOUT the "OVERLAPPED" attribute so that our 'fgets()', etc,
+    // calls (which end up calling the "ReadFile()", etc, Win32 API) work as
+    // expected.
+    //
+    // Note that the "overlapped" attribute for a socket is completely different
+    // from its non-blocking vs. blocking mode. All sockets are created, by default,
+    // as blocking mode sockets, but WITH the "overlapped" attribute set. Thus all
+    // sockets are actually asynchonous by default. (The winsock DLL(s) handle the
+    // blocking mode separately programmatically internally even though the socket
+    // is actually an asynchronous Win32 "file").
+    //
+    // Thus we need to specifically request that our [blocking mode] sockets be
+    // created WITHOUT the Win32 "OVERLAPPED" attribute (so that when we call the
+    // C runtime read/write/etc functions, the C runtime's ReadFile/WriteFile calls
+    // work (which they don't (they fail with error 87 ERROR_INVALID_PARAMETER)
+    // when called on a Win32 "file" handle created with the OVERLAPPED attribute
+    // but without an OVERLAPPED structure pased in the ReadFile/WriteFile call
+    // (which the C runtime functions don't use)). You follow?).
+    //
+    // See KB (Knowledge Base) article 181611 for more information:
+    //
+    //        "Socket overlapped I/O versus blocking/non-blocking mode"
+    //            (http://support.microsoft.com/?kbid=181611)
+    //
+    //  ---------------------------------------------------------------------
+    //   "However, you can call the setsockopt API with SO_OPENTYPE option
+    //   on any socket handle -- including an INVALID_SOCKET -- to change
+    //   the overlapped attributes for all successive socket calls in the
+    //   same thread. The default SO_OPENTYPE option value is 0, which sets
+    //   the overlapped attribute. All non-zero option values make the socket
+    //   synchronous and make it so that you cannot use a completion function."
+    //  ---------------------------------------------------------------------
+    //
+    // The documentation for the "SOL_SOCKET" SO_OPENTYPE socket option contains
+    // the folowing advice/warning however:
+    //
+    //
+    //    "Once set, subsequent sockets created will be non-overlapped.
+    //     This option should not be used; use WSASocket and leave the
+    //     WSA_FLAG_OVERLAPPED turned off."
+    //
+    //
+    // So we'll use WSASocket instead as suggested.
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+
+    // The last parameter is where one would normally specify the WSA_FLAG_OVERLAPPED
+    // option, but we're specifying '0' because we want our sockets to be synchronous
+    // and not asynchronous so the C runtime functions can successfully perform ReadFile
+    // and WriteFile on them...
+
+    SOCKET sock = WSASocket( af, type, protocol, NULL, 0, 0 );
+
+    if ( INVALID_SOCKET == sock )
+    {
+        errno = WSAGetLastError();
+        sock = (SOCKET) -1;
+    }
+
+    return ( (int) sock );
+}
+
+struct MODE_TRANS
+{
+    const char*  old_mode;
+    const char*  new_mode;
+    int          new_flags;
+};
+
+typedef struct MODE_TRANS MODE_TRANS;
+
+FILE* w32_fdopen( int their_fd, const char* their_mode )
+{
+    int new_fd, new_flags = 0;
+    const char* new_mode = NULL;
+    MODE_TRANS* pModeTransTab;
+    MODE_TRANS  mode_trans_tab[] =
+    {
+        { "r",   "rbc",  _O_RDONLY                        | _O_BINARY },
+        { "r+",  "r+bc", _O_RDWR                          | _O_BINARY },
+        { "r+b", "r+bc", _O_RDWR                          | _O_BINARY },
+        { "rb+", "r+bc", _O_RDWR                          | _O_BINARY },
+
+        { "w",   "wbc",  _O_WRONLY | _O_CREAT | _O_TRUNC  | _O_BINARY },
+        { "w+",  "w+bc", _O_RDWR   | _O_CREAT | _O_TRUNC  | _O_BINARY },
+        { "w+b", "w+bc", _O_RDWR   | _O_CREAT | _O_TRUNC  | _O_BINARY },
+        { "wb+", "w+bc", _O_RDWR   | _O_CREAT | _O_TRUNC  | _O_BINARY },
+
+        { "a",   "abc",  _O_WRONLY | _O_CREAT | _O_APPEND | _O_BINARY },
+        { "a+",  "a+bc", _O_RDWR   | _O_CREAT | _O_APPEND | _O_BINARY },
+        { "a+b", "a+bc", _O_RDWR   | _O_CREAT | _O_APPEND | _O_BINARY },
+        { "ab+", "a+bc", _O_RDWR   | _O_CREAT | _O_APPEND | _O_BINARY },
+
+        { NULL, NULL, 0 }
+    };
+
+    ASSERT( their_mode );
+
+    // (we're only interested in socket calls)
+
+    if ( !socket_is_socket( their_fd ) )
+        return _fdopen( their_fd, their_mode );
+
+    // The passed "file descriptor" is actually a SOCKET handle...
+
+    // Translate their original mode to our new mode
+    // and determine what flags we should use in our
+    // call to _open_osfhandle()...
+
+    if ( their_mode )
+        for (pModeTransTab = mode_trans_tab; pModeTransTab->old_mode; pModeTransTab++)
+            if ( strcmp( their_mode, pModeTransTab->old_mode ) == 0 )
+            {
+                new_mode  = pModeTransTab->new_mode;
+                new_flags = pModeTransTab->new_flags;
+                break;
+            }
+
+    if ( !new_mode )
+    {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    // Allocate a CRT file descriptor integer for this SOCKET...
+
+    if ( ( new_fd = _open_osfhandle( their_fd, new_flags ) ) < 0 )
+        return NULL;  // (errno already set)
+
+    // Now we should be able to do the actual fdopen...
+
+    return _fdopen( new_fd, new_mode );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// fclose
+int w32_fclose ( FILE* stream )
+{
+    int sd, rc, err;
+    SOCKET sock;
+
+    ASSERT( stream );
+
+    sd = fileno( stream );
+
+    if ( !socket_is_socket( sd ) )
+        return fclose( stream );
+
+    // (SOCKETs get special handling)
+
+    sock = (SOCKET) _get_osfhandle( sd );
+
+    // Flush the data, close the socket, then deallocate
+    // the crt's file descriptor for it by calling fclose.
+
+    // Note that the fclose will fail since the closesocket
+    // has already closed the o/s handle, but we don't care;
+    // all we care about is the crt deallocating its file
+    // descriptor for it...
+
+    fflush( stream );               // (flush buffers)
+    shutdown( sock, SD_BOTH);       // (try to be graceful)
+    rc  = closesocket( sock );      // (close socket)
+    err = WSAGetLastError();        // (save retcode)
+    fclose( stream );               // (ignore likely error)
+
+    if ( SOCKET_ERROR == rc )       // (closesocket error?)
+    {
+        errno = err;                // (yes, return error)
+        return EOF;                 // (failed)
+    }
+    return 0;                       // (success)
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Determine whether a file descriptor is a socket or not...
+// (returns 1==true if it's a socket, 0==false otherwise)
+int socket_is_socket( int sfd )
+{
+    u_long dummy;
+    return WSAHtonl( (SOCKET) sfd, 666, &dummy ) == 0 ? 1 : 0;
+}

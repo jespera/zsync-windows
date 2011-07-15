@@ -19,9 +19,9 @@
 
 #ifdef WIN32
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+//#ifdef HAVE_CONFIG_H
+//#  include "config.h"
+//#endif
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -30,6 +30,8 @@
 #include <time.h>
 #include <string.h>
 #include <windows.h>
+#include <stdio.h>
+#include <sys/stat.h>
 
 // Convert a string representation time to a time tm structure.
 // It is the conversion function of strftime().
@@ -94,8 +96,8 @@ int mkstemp (char *tmpl);
 #define _O_EXCL         0x0400
 #define O_EXCL          _O_EXCL
 
-#define _S_IREAD        0000400         /* read permission, owner */
-#define _S_IWRITE       0000200         /* write permission, owner */
+//#define _S_IREAD        0000400         /* read permission, owner */
+//#define _S_IWRITE       0000200         /* write permission, owner */
 #define S_IREAD			_S_IREAD
 #define S_IWRITE		_S_IWRITE
 
@@ -153,4 +155,20 @@ ssize_t pread (int fd, void *buf, size_t count, off_t offset);
 
 struct tm *gmtime_r (const time_t *timep, struct tm *result);
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//   w32util.c        Windows porting functions
+//////////////////////////////////////////////////////////////////////////////////////////
+// (c) Copyright "Fish" (David B. Trout), 2005-2009. Released under the Q Public License
+// (http://www.hercules-390.org/herclic.html) as modifications to Hercules.
+//////////////////////////////////////////////////////////////////////////////////////////
+
+SOCKET PASCAL w32_socket( int af, int type, int protocol );
+
+FILE* w32_fdopen( int their_fd, const char* their_mode );
+
+int w32_fclose ( FILE* stream );
+
+int socket_is_socket( int sfd );
+
 #endif
+

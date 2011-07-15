@@ -125,3 +125,15 @@
 #ifdef SOCKLEN_T_REPLACEMENT
 #  define socklen_t @SOCKLEN_T_REPLACEMENT@
 #endif
+
+#ifdef WIN32
+//#  undef socket
+//#  undef close_socket
+//#  undef fdopen
+//#  undef fdclose
+#  define socket w32_socket
+#  define close_socket(f) closesocket(f)
+#  define fdopen w32_fdopen
+#  define fdclose w32_fdclose
+#  include "win32.h"
+#endif
