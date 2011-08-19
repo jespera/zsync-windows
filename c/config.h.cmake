@@ -126,7 +126,7 @@
 #  define socklen_t @SOCKLEN_T_REPLACEMENT@
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 //#  undef socket
 //#  undef close_socket
 //#  undef fdopen
@@ -135,6 +135,7 @@
 #  define close_socket(f) closesocket(f)
 #  define fdopen w32_fdopen
 #  define fdclose w32_fdclose
+#  define tmpfile w32_tmpfile
 #  include "win32.h"
 
 #  define WIN32_LEAN_AND_MEAN

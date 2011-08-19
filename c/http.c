@@ -388,7 +388,7 @@ FILE *http_get(const char *orig_url, char **track_referer, const char *tfname) {
             }
             else if (code == 200) {     // Downloading whole file
                 /* Write new file (plus allow reading once we finish) */
-                // FIXME Win32 native version fails here because Microsoft's version of tmpfile() creates the file in C:\
+                /* FIXME Win32 native version fails here because Microsoft's version of tmpfile() creates the file in C:\ */
                 g = fname ? fopen(fname, "w+") : tmpfile();
             }
             else if (code == 206 && fname) {    // Had partial content and server confirms not modified
