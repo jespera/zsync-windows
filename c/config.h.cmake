@@ -136,4 +136,19 @@
 #  define fdopen w32_fdopen
 #  define fdclose w32_fdclose
 #  include "win32.h"
-#endif
+
+#  define WIN32_LEAN_AND_MEAN
+
+/* MinGW assumes we are compiling for Windows NT 4.0 but ws2tcpip.h
+   defines getaddrinfo only for Windows XP and newer */
+#cmakedefine HAVE_WSPIAPI_H 1
+
+#  if defined(__MINGW32__) && !defined(HAVE_WSPIAPI_H)
+#    if !defined(WINVER) || (WINVER < 0x0501)
+#      define WINVER 0x0501
+#    endif
+#    if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0501)
+#      define _WIN32_WINNT 0x0501
+#    endif
+#  endif
+#endif // WIN32
