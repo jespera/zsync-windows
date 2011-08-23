@@ -221,7 +221,15 @@ char* strptime(const char *buf, const char *fmt, struct tm *tm) {
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.  */
+   version 2.1 of the License, or (at your option) any later version.
+
+   Modified by Pau Garcia i Quiles to allow renaming the temporary file.
+   Unfortunately on Windows allowing rename implies non-exclusive access:
+   http://msdn.microsoft.com/en-us/library/aa363858%28v=vs.85%29.aspx
+
+   FILE_SHARE_DELETE "Note  Delete access allows both delete and rename operations."
+                     "the dwShareMode parameter must be zero (exclusive access)"
+*/
 
 static const char letters[] =
 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -303,14 +311,29 @@ mkstemp (char *tmpl)
       v /= 62;
       XXXXXX[5] = letters[v % 62];
 
-      fd = open (tmpl, O_RDWR | O_CREAT | O_EXCL, _S_IREAD | _S_IWRITE);
+      /* On Windows, open(2) locks the file. A bit of imagination is required to be able to rename the temporary file. */
+      /* fd = open (tmpl, O_RDWR | O_CREAT | O_EXCL, _S_IREAD | _S_IWRITE); */
+      HANDLE hFile = CreateFile(tmpl,
+                                GENERIC_READ | GENERIC_WRITE,
+                                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                                NULL,
+                                CREATE_ALWAYS,
+                                FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_POSIX_SEMANTICS,
+                                NULL );
+      if( INVALID_HANDLE_VALUE == hFile) {
+          errno = EINVAL;
+          return -1;
+      }
+
+      int fd = _open_osfhandle((long int)hFile, _O_CREAT | _O_RDWR | _O_TEMPORARY);
+
       if (fd >= 0)
-    {
-      errno = save_errno;
-      return fd;
-    }
-      else if (errno != EEXIST)
-    return -1;
+      {
+        errno = save_errno;
+        return fd;
+      } else if (errno != EEXIST) {
+        return -1;
+      }
     }
 
   /* We got out of the loop because we ran out of combinations to try.  */
