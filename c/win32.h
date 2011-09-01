@@ -1,3 +1,19 @@
+#ifdef _WIN32
+
+//#ifdef HAVE_CONFIG_H
+//#  include "config.h"
+//#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#include <time.h>
+#include <string.h>
+#include <windows.h>
+#include <stdio.h>
+#include <sys/stat.h>
+
 // Copyright 2009 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,25 +29,7 @@
 // limitations under the License.
 
 // Taken from http://code.google.com/p/googlesitemapgenerator/source/browse/trunk/src/common/timesupport.h,
-// Converted from C++ to C by Pau Garcia i Quiles <pgquiles@elpauer.org>
-
-// This files includes functions to support time related operations.
-
-#ifdef WIN32
-
-//#ifdef HAVE_CONFIG_H
-//#  include "config.h"
-//#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#include <time.h>
-#include <string.h>
-#include <windows.h>
-#include <stdio.h>
-#include <sys/stat.h>
+// Converted from C++ to C, and basic support for timezones, by Pau Garcia i Quiles <pgquiles@elpauer.org>
 
 // Convert a string representation time to a time tm structure.
 // It is the conversion function of strftime().

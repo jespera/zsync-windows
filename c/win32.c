@@ -1,3 +1,12 @@
+#ifdef _WIN32
+
+#include "win32.h"
+#include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <fcntl.h>
+
 // Copyright 2009 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,16 +20,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// Taken from http://code.google.com/p/googlesitemapgenerator/source/browse/trunk/src/common/timesupport.cc,
-// Converted from C++ to C by Pau Garcia i Quiles <pgquiles@elpauer.org>
 
-#include "win32.h"
-
-#ifdef WIN32
-
-#include <time.h>
-#include <ctype.h>
-#include <fcntl.h>
+// Taken from http://code.google.com/p/googlesitemapgenerator/source/browse/trunk/src/common/timesupport.h,
+// Converted from C++ to C, and basic support for timezones, by Pau Garcia i Quiles <pgquiles@elpauer.org>
 
 // Implement strptime under windows
 static const char* kWeekFull[] = {
@@ -165,11 +167,21 @@ static char* _strptime(const char *s, const char *format, struct tm *tm) {
         while (isspace(*s)) ++s;
         break;
 
+    case 'z': /* Basic support, enough for zsync */
+        tzset();
+
+        if(_daylight > 0) {
+            tm->tm_isdst = 1;
+        } else {
+            tm->tm_isdst = 0;
+        }
+        break;
+
       // '%'.
       case '%':
         if (*s != '%') return NULL;
         ++s;
-        break;
+        break;        
 
       // All the other format are not supported.
       default:
