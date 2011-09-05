@@ -20,6 +20,8 @@ include_directories(${zsync_BINARY_DIR})
 add_definitions(-DHAVE_CONFIG_H)
 if(CMAKE_COMPILER_IS_GNUC)
   set(ZSCFLAGS ${ZSCFLAGS} -D_BSD_SOURCE=1 -D_XOPEN_SOURCE=600 -ffast-math -Wall -Wwrite-strings -Winline -Wextra -Winline -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wundef -Wbad-function-cast -Wcast-align -Wvolatile-register-var)
+  set(CMAKE_CFLAGS "-W -Wall -Wshadow")
+  set(CMAKE_CXX_FLAGS "-W -Wall -Wshadow")
 endif(CMAKE_COMPILER_IS_GNUC)
 
 add_definitions(${ZSCFLAGS})
