@@ -75,7 +75,7 @@ FILE* open_zcat_pipe(const char* fname)
     if (!no_progress)
         fprintf(stderr, "reading seed %s: ", cmd);
     {   /* Finally, open the subshell for reading, and return the handle */
-        FILE* f = popen(cmd, "r");
+        FILE* f = popen(cmd, "rb");
         free(cmd);
         return f;
     }
@@ -111,7 +111,7 @@ void read_seed_file(struct zsync_state *z, const char *fname) {
     }
     else {
         /* Simple uncompressed file - open it */
-        FILE *f = fopen(fname, "r");
+        FILE *f = fopen(fname, "rb");
         if (!f) {
             perror("open");
             fprintf(stderr, "not using seed file %s\n", fname);
@@ -179,7 +179,7 @@ struct zsync_state *read_zsync_control_file(const char *p, const char *fn) {
     char *lastpath = NULL;
 
     /* Try opening as a local path */
-    f = fopen(p, "r");
+    f = fopen(p, "rb");
     if (!f) {
         /* No such local file - if not a URL either, report error */
         if (!is_url_absolute(p)) {

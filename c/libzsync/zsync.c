@@ -671,12 +671,12 @@ static int zsync_recompress(struct zsync_state *zs) {
     /* Read gzipped version of the data via pipe from gzip; write it to our new
      * output file, except that we replace the gzip header with our own from
      * the .zsync file. */
-    g = popen(cmd, "r");
+    g = popen(cmd, "rb");
     if (g) {
         char zoname[1024];
 
         snprintf(zoname, sizeof(zoname), "%s.gz", zs->cur_filename);
-        zout = fopen(zoname, "w");
+        zout = fopen(zoname, "wb");
 
         if (zout) {
             char *p = zs->gzhead;

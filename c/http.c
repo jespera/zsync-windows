@@ -97,7 +97,7 @@ int connect_to(const char *node, const char *service) {
  * second parameter. 
  */
 FILE *http_get_stream(int fd, int *code) {
-    FILE *f = fdopen(fd, "r");
+    FILE *f = fdopen(fd, "rb");
     char buf[256];
     char *p;
 
@@ -388,16 +388,15 @@ FILE *http_get(const char *orig_url, char **track_referer, const char *tfname) {
             }
             else if (code == 200) {     // Downloading whole file
                 /* Write new file (plus allow reading once we finish) */
-                /* FIXME Win32 native version fails here because Microsoft's version of tmpfile() creates the file in C:\ */
-                g = fname ? fopen(fname, "w+") : tmpfile();
+                g = fname ? fopen(fname, "wb+") : tmpfile();
             }
             else if (code == 206 && fname) {    // Had partial content and server confirms not modified
                 /* Append to existing on-disk content (plus allow reading once we finish) */
-                g = fopen(fname, "a+");
+                g = fopen(fname, "ab+");
             }
             else if (code == 304) {     // Unchanged (if-modified-since was false)
                 /* No fetching, just reuse on-disk file */
-                g = fopen(tfname, "r");
+                g = fopen(tfname, "rb");
             }
             else {                      /* Don't know - error */
                 fclose(f);

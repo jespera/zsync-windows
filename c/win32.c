@@ -602,6 +602,9 @@ typedef struct MODE_TRANS MODE_TRANS;
    http://msdn.microsoft.com/en-us/library/ms740096
    http://oldwiki.mingw.org/index.php/sockets
 
+   Modified by Pau Garcia i Quiles <pgquiles@elpauer.org> to support
+   'rb', 'wb' and 'ab' modes
+
    */
 
 FILE* w32_fdopen( int their_fd, const char* their_mode )
@@ -612,16 +615,19 @@ FILE* w32_fdopen( int their_fd, const char* their_mode )
     MODE_TRANS  mode_trans_tab[] =
     {
         { "r",   "rbc",  _O_RDONLY                        | _O_BINARY },
+        { "rb",  "rbc",  _O_RDONLY                        | _O_BINARY },
         { "r+",  "r+bc", _O_RDWR                          | _O_BINARY },
         { "r+b", "r+bc", _O_RDWR                          | _O_BINARY },
         { "rb+", "r+bc", _O_RDWR                          | _O_BINARY },
 
         { "w",   "wbc",  _O_WRONLY | _O_CREAT | _O_TRUNC  | _O_BINARY },
+        { "wb",  "wbc",  _O_WRONLY | _O_CREAT | _O_TRUNC  | _O_BINARY },
         { "w+",  "w+bc", _O_RDWR   | _O_CREAT | _O_TRUNC  | _O_BINARY },
         { "w+b", "w+bc", _O_RDWR   | _O_CREAT | _O_TRUNC  | _O_BINARY },
         { "wb+", "w+bc", _O_RDWR   | _O_CREAT | _O_TRUNC  | _O_BINARY },
 
         { "a",   "abc",  _O_WRONLY | _O_CREAT | _O_APPEND | _O_BINARY },
+        { "ab",  "abc",  _O_WRONLY | _O_CREAT | _O_APPEND | _O_BINARY },
         { "a+",  "a+bc", _O_RDWR   | _O_CREAT | _O_APPEND | _O_BINARY },
         { "a+b", "a+bc", _O_RDWR   | _O_CREAT | _O_APPEND | _O_BINARY },
         { "ab+", "a+bc", _O_RDWR   | _O_CREAT | _O_APPEND | _O_BINARY },

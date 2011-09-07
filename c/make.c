@@ -468,7 +468,7 @@ static const char *const try_opts[] =
 char *guess_gzip_options(const char *f) {
     char orig[SAMPLE];
     {   /* Read sample of the header of the compressed file */
-        FILE *s = fopen(f, "r");
+        FILE *s = fopen(f, "rb");
         if (!s) {
             perror("open");
             return NULL;
@@ -512,7 +512,7 @@ char *guess_gzip_options(const char *f) {
                 if (verbose)
                     fprintf(stderr, "running %s to determine gzip options\n",
                             cmd);
-                p = popen(cmd, "r");
+                p = popen(cmd, "rb");
                 if (!p) {
                     perror(cmd);
                 }
