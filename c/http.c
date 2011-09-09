@@ -33,6 +33,9 @@
 #if defined(_MSC_VER) || defined(__MINGW32__)
 # undef socklen_t
 # include <ws2tcpip.h>
+# include <winsock2.h>
+#define MSG_WAITALL 0x8 /* do not complete until packet is completely filled */
+# include <fcntl.h>
 #else
 # include <sys/socket.h>
 # include <netdb.h>
@@ -67,6 +70,7 @@ int connect_to(const char *node, const char *service) {
     hint.ai_socktype = SOCK_STREAM;
 
     if ((rc = getaddrinfo(node, service, &hint, &ai)) != 0) {
+        printf("\nError '%s' in file %s, line %d\n", node, __FILE__, __LINE__);
         perror(node);
         return -1;
     }
@@ -76,16 +80,19 @@ int connect_to(const char *node, const char *service) {
 
         for (p = ai; sd == -1 && p != NULL; p = p->ai_next) {
             if ((sd =
-                 socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+                 socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) { // FIXME Is this working on Windows?
                 perror("socket");
             }
-            else if (connect(sd, p->ai_addr, p->ai_addrlen) < 0) {
+            else if (connect(sd, p->ai_addr, p->ai_addrlen) < 0) { // FIXME Is this working on Windows?
+                printf("\nError '%s' in file %s, line %d\n", node, __FILE__, __LINE__);
                 perror(node);
                 close(sd);
                 sd = -1;
             }
         }
+
         freeaddrinfo(ai);
+
         return sd;
     }
 }
@@ -439,6 +446,7 @@ FILE *http_get(const char *orig_url, char **track_referer, const char *tfname) {
             char buf[512];
             do {
                 if (fgets(buf, sizeof(buf), f) == NULL) {
+                    printf("\nError in file %s, line %d\n", __FILE__, __LINE__);
                     perror("read");
                     exit(1);
                 }
@@ -460,6 +468,7 @@ FILE *http_get(const char *orig_url, char **track_referer, const char *tfname) {
                 char buf[1024];
                 r = fread(buf, 1, sizeof(buf), f);
                 if (r == 0 && ferror(f)) {
+                    printf("\nError in file %s, line %d\n", __FILE__, __LINE__);
                     perror("read");
                     break;
                 }
@@ -608,11 +617,28 @@ static int get_more_data(struct range_fetch *rf) {
     {   /* Read as much as the OS wants to give us, up to a limit of filling
          * the rest of the buffer; ignore EINTR. */
         int n;
-        do {
-            n = read(rf->sd, &(rf->buf[rf->buf_end]),
+
+        int new_fd = rf->sd;
+#ifdef _WIN32
+        printf("\nMassasing rf->sd through _open_osfhandle\n");
+        //new_fd = _open_osfhandle(rf->sd, _O_RDONLY | _O_BINARY);
+#endif
+
+        do {  /* FIXME Windows fails here with "Bad file descriptor" -- Looks like rf->sd needs to go through __open_osfhandle */
+#ifdef _WIN32
+            printf("\nReading data (%d bytes)...\n", sizeof(rf->buf) - rf->buf_end);
+            n = recv(new_fd, &(rf->buf[rf->buf_end]),
+                     sizeof(rf->buf) - rf->buf_end, MSG_WAITALL);
+#else
+            n = read(new_fd, &(rf->buf[rf->buf_end]),
                      sizeof(rf->buf) - rf->buf_end);
+#endif
+
+/*            n = read(rf->sd, &(rf->buf[rf->buf_end]),
+                     sizeof(rf->buf) - rf->buf_end); */
         } while (n == -1 && errno == EINTR);
         if (n < 0) {
+            printf("\nError in file %s, line %d\n", __FILE__, __LINE__);
             perror("read");
         }
         else {
@@ -628,7 +654,7 @@ static int get_more_data(struct range_fetch *rf) {
 /* rfgets - get next line from the remote (terminated by LF or end-of-file)
  * (using the buffer, fetching more data if there's no full line in the buffer
  * yet) */
-static char *rfgets(char *buf, size_t len, struct range_fetch *rf) {
+static char *rfgets(char *buf, size_t len, struct range_fetch *rf) { // FIXME Is this working on Windows?
     char *p;
     while (1) {
         /* Look for a line end in the in buffer */
@@ -829,7 +855,7 @@ static void buflwr(char *s) {
  * appropriately.
  * Returns: EOF returns 0, good returns 206 (reading a range block) or 30x
  *  (redirect), error returns <0 */
-int range_fetch_read_http_headers(struct range_fetch *rf) {
+int range_fetch_read_http_headers(struct range_fetch *rf) { // FIXME Is this working on Windows?
     char buf[512];
     int status;
     int seen_location = 0;
@@ -837,7 +863,10 @@ int range_fetch_read_http_headers(struct range_fetch *rf) {
     {                           /* read status line */
         char *p;
 
-        if (rfgets(buf, sizeof(buf), rf) == NULL)
+        char* blah = rfgets(buf, sizeof(buf), rf);
+
+        /* if (rfgets(buf, sizeof(buf), rf) == NULL) */
+        if(NULL == blah)
             return -1;
         if (buf[0] == 0)
             return 0;           /* EOF, caller decides if that's an error */

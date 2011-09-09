@@ -183,6 +183,7 @@ struct zsync_state *read_zsync_control_file(const char *p, const char *fn) {
     if (!f) {
         /* No such local file - if not a URL either, report error */
         if (!is_url_absolute(p)) {
+            printf("\nError '%s' in file %s, line %d\n", p, __FILE__, __LINE__);
             perror(p);
             exit(2);
         }
