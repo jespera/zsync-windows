@@ -624,7 +624,17 @@ static int get_more_data(struct range_fetch *rf) {
         //new_fd = _open_osfhandle(rf->sd, _O_RDONLY | _O_BINARY);
 #endif
 
-        do {  /* FIXME Windows fails here with "Bad file descriptor" -- Looks like rf->sd needs to go through __open_osfhandle */
+        /* FIXME
+         * If using 'read(2)', Windows fails with "Bad file descriptor" even if using _open_osfhandle
+         *
+         * With 'recv(2)' it works fine on Windows when downloading from a remove HTTP site, but it will
+         *  probably fail for local files (is that supported by zsync? I have never used it)
+         *
+         * The problem with read(2) is probably I need to do something more before/after _open_osfhandle,
+         * I will check w32_fdopen to see what I'm missing.
+        */
+
+        do {
 #ifdef _WIN32
             printf("\nReading data (%d bytes)...\n", sizeof(rf->buf) - rf->buf_end);
             n = recv(new_fd, &(rf->buf[rf->buf_end]),
