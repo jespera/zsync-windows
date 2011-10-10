@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <winsock2.h>
 
 // Copyright 2009 Google Inc.
 //
