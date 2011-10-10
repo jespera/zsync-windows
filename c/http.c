@@ -618,34 +618,14 @@ static int get_more_data(struct range_fetch *rf) {
          * the rest of the buffer; ignore EINTR. */
         int n;
 
-        int new_fd = rf->sd;
-#ifdef _WIN32
-        printf("\nMassasing rf->sd through _open_osfhandle\n");
-        //new_fd = _open_osfhandle(rf->sd, _O_RDONLY | _O_BINARY);
-#endif
-
-        /* FIXME
-         * If using 'read(2)', Windows fails with "Bad file descriptor" even if using _open_osfhandle
-         *
-         * With 'recv(2)' it works fine on Windows when downloading from a remove HTTP site, but it will
-         *  probably fail for local files (is that supported by zsync? I have never used it)
-         *
-         * The problem with read(2) is probably I need to do something more before/after _open_osfhandle,
-         * I will check w32_fdopen to see what I'm missing.
-        */
-
         do {
 #ifdef _WIN32
-            printf("\nReading data (%d bytes)...\n", sizeof(rf->buf) - rf->buf_end);
-            n = recv(new_fd, &(rf->buf[rf->buf_end]),
+            n = recv(rf->sd, &(rf->buf[rf->buf_end]),
                      sizeof(rf->buf) - rf->buf_end, MSG_WAITALL);
 #else
-            n = read(new_fd, &(rf->buf[rf->buf_end]),
+            n = read(rf->sd, &(rf->buf[rf->buf_end]),
                      sizeof(rf->buf) - rf->buf_end);
 #endif
-
-/*            n = read(rf->sd, &(rf->buf[rf->buf_end]),
-                     sizeof(rf->buf) - rf->buf_end); */
         } while (n == -1 && errno == EINTR);
         if (n < 0) {
             printf("\nError in file %s, line %d\n", __FILE__, __LINE__);

@@ -570,8 +570,6 @@ SOCKET PASCAL w32_socket( int af, int type, int protocol )
     // and not asynchronous so the C runtime functions can successfully perform ReadFile
     // and WriteFile on them...
 
-    printf("\nUsing w32_socket\n");
-
     SOCKET sock = WSASocket( af, type, protocol, NULL, 0, 0 );
 
     if ( INVALID_SOCKET == sock )
@@ -777,8 +775,6 @@ int socket_is_socket( int sfd )
 FILE *
 w32_tmpfile (void)
 {
-    printf("Using w32_tmpfile\n");
-
     DWORD path_len;
     WCHAR path_name[MAX_PATH + 1];
     WCHAR file_name[MAX_PATH + 1];
