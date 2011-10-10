@@ -619,13 +619,8 @@ static int get_more_data(struct range_fetch *rf) {
         int n;
 
         do {
-#ifdef _WIN32
             n = recv(rf->sd, &(rf->buf[rf->buf_end]),
                      sizeof(rf->buf) - rf->buf_end, MSG_WAITALL);
-#else
-            n = read(rf->sd, &(rf->buf[rf->buf_end]),
-                     sizeof(rf->buf) - rf->buf_end);
-#endif
         } while (n == -1 && errno == EINTR);
         if (n < 0) {
             printf("\nError in file %s, line %d\n", __FILE__, __LINE__);
