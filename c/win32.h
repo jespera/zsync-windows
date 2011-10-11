@@ -1,3 +1,6 @@
+#ifndef H_WIN32
+#define H_WIN32
+
 #ifdef _WIN32
 
 //#ifdef HAVE_CONFIG_H
@@ -150,7 +153,6 @@ ssize_t pread (int fd, void *buf, size_t count, off_t offset);
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
-
 struct tm *gmtime_r (const time_t *timep, struct tm *result);
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -217,3 +219,4 @@ FILE * w32_tmpfile (void);
 
 #endif
 
+#endif // H_WIN32

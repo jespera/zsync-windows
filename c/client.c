@@ -36,15 +36,16 @@
 # include <dmalloc.h>
 #endif
 
-#ifdef WIN32
-# include <winsock2.h>
-#endif
-
 #include "libzsync/zsync.h"
 
 #include "http.h"
 #include "url.h"
 #include "progress.h"
+
+#ifdef WIN32
+# include <winsock2.h>
+#endif
+
 
 /* FILE* f = open_zcat_pipe(file_str)
  * Returns a (popen) filehandle which when read returns the un-gzipped content
@@ -152,7 +153,7 @@ long long http_down;
  * number of entries is passed by reference and updated in place. The new entry
  * is appended to the list.
  */
-static void **append_ptrlist(int *n, void **p, void *a) {
+static char **append_ptrlist(int *n, char **p, void *a) {
     if (!a)
         return p;
     p = realloc(p, (*n + 1) * sizeof *p);
@@ -580,7 +581,7 @@ int main(int argc, char **argv) {
 
         /* Try any seed files supplied by the command line */
         for (i = 0; i < nseedfiles; i++) {
-            int dup = 0, j;
+            int d = 0, j;
 
             /* And stop reading seed files once the target is complete. */
             if (zsync_status(zs) >= 2) break;
@@ -588,11 +589,11 @@ int main(int argc, char **argv) {
             /* Skip dups automatically, to save the person running the program
              * having to worry about this stuff. */
             for (j = 0; j < i; j++) {
-                if (!strcmp(seedfiles[i],seedfiles[j])) dup = 1;
+                if (!strcmp(seedfiles[i],seedfiles[j])) d = 1;
             }
 
             /* And now, if not a duplicate, read it */
-            if (!dup)
+            if (!d)
                 read_seed_file(zs, seedfiles[i]);
         }
         /* Show how far that got us */

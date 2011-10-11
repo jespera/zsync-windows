@@ -1,3 +1,6 @@
+#ifndef H_CONFIG
+#define H_CONFIG
+
 #cmakedefine HAVE_FSEEKO 1
 
 #cmakedefine FSEEKO_REPLACEMENT 1
@@ -80,6 +83,11 @@
 /* The size of `size_t', as computed by sizeof. */
 @SIZEOF_SIZE_T_CODE@
 
+#cmakedefine SIZE_T_REPLACEMENT 1
+#ifdef SIZE_T_REPLACEMENT
+#  define size_t @SIZE_T_REPLACEMENT@
+#endif
+
 /* Define to 1 if you have the ANSI C header files. */
 /* #undef STDC_HEADERS */
 
@@ -90,10 +98,30 @@
 #cmakedefine WITH_DMALLOC 1
 
 /* Enable BSD extensions if present */
-/* #undef _BSD_SOURCE */
+#cmakedefine _BSD_SOURCE @_BSD_SOURCE@
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 /* #undef _FILE_OFFSET_BITS */
+
+/*
+#if defined(_WIN32) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
+#  warning "USING REPLACEMENT FUNCTIONS FOR LFF"
+#  define fseeko fseeko64
+#  define ftello ftello64
+//#  define lseek _lseeki64
+#  undef stat
+//#  define stat _stati64
+//#  define fstat _fstati64
+#  define wstat _wstati64
+   typedef long long _off64_t;
+#  define _off64_t off_t
+#else
+#  define fseeko fseek
+#  define ftello ftell
+   typedef long _off_t;
+#  define _off_t off_t
+#endif
+*/
 
 /* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
 /* #undef _LARGEFILE_SOURCE */
@@ -102,7 +130,7 @@
 /* #undef _LARGE_FILES */
 
 /* Enable POSIX extensions if present */
-/* #undef _XOPEN_SOURCE */
+#cmakedefine _XOPEN_SOURCE @_XOPEN_SOURCE@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
@@ -114,11 +142,6 @@
 #cmakedefine IN_PORT_T_REPLACEMENT 1
 #ifdef IN_PORT_T_REPLACEMENT
 #  define in_port_t @IN_PORT_T_REPLACEMENT@
-#endif
-
-#cmakedefine SIZE_T_REPLACEMENT 1
-#ifdef SIZE_T_REPLACEMENT
-#  define size_t @SIZE_T_REPLACEMENT@
 #endif
 
 #cmakedefine SOCKLEN_T_REPLACEMENT 1
@@ -153,3 +176,5 @@
 #    endif
 #  endif
 #endif // WIN32
+
+#endif /* H_CONFIG */

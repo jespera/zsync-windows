@@ -693,7 +693,7 @@ static int zsync_recompress(struct zsync_state *zs) {
             while (!feof(g)) {
                 char buf[1024];
                 int r;
-                const char *p = buf;
+                const char *pt = buf;
 
                 if ((r = fread(buf, 1, sizeof(buf), g)) < 0) {
                     perror("fread");
@@ -701,10 +701,10 @@ static int zsync_recompress(struct zsync_state *zs) {
                     goto leave_it;
                 }
                 if (skip) {
-                    p = skip_zhead(buf);
+                    pt = skip_zhead(buf);
                     skip = 0;
                 }
-                if (fwrite(p, 1, r - (p - buf), zout) != r - (p - buf)) {
+                if (fwrite(pt, 1, r - (pt - buf), zout) != r - (pt - buf)) {
                     perror("fwrite");
                     rc = -1;
                     goto leave_it;
@@ -960,14 +960,14 @@ static int zsync_receive_data_compressed(struct zsync_receiver *zr,
             if (zr->strm.avail_out == 0 || eoz) {
                 /* If this was at the start of a block, try submitting it */
                 if (!(zr->outoffset % blocksize)) {
-                    int rc;
+                    int rc2;
 
                     if (zr->strm.avail_out)
                         memset(zr->strm.next_out, 0, zr->strm.avail_out);
-                    rc = zsync_submit_data(zr->zs, zr->outbuf,
+                    rc2 = zsync_submit_data(zr->zs, zr->outbuf,
                                            zr->outoffset, 1);
                     if (!zr->strm.avail_out)
-                        ret |= rc;
+                        ret |= rc2;
                     zr->outoffset += blocksize;
                 }
                 else {

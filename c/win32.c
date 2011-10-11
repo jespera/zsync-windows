@@ -428,7 +428,6 @@ ssize_t pwrite(int fd, const void * buf, size_t size, off_t offset) {
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
-
 struct tm *gmtime_r (const time_t *timep, struct tm *result)
 {
     struct tm *s = gmtime (timep);
@@ -438,8 +437,6 @@ struct tm *gmtime_r (const time_t *timep, struct tm *result)
     *result = *s;
     return result;
 }
-#endif  // WIN32
-
 
 /*********************************************************************
  *********************************************************************
@@ -816,3 +813,5 @@ w32_tmpfile (void)
 
     return fp;
 }
+
+#endif // _WIN32

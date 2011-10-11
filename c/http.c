@@ -30,17 +30,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#if defined(_MSC_VER) || defined(__MINGW32__)
-# undef socklen_t
-# include <ws2tcpip.h>
-# include <winsock2.h>
-#define MSG_WAITALL 0x8 /* do not complete until packet is completely filled */
-# include <fcntl.h>
-#else
-# include <sys/socket.h>
-# include <netdb.h>
-#endif
-
 #include <time.h>
 
 #ifndef HAVE_GETADDRINFO
@@ -55,6 +44,18 @@
 #include "url.h"
 #include "progress.h"
 #include "format_string.h"
+
+#if defined(_MSC_VER) || defined(__MINGW32__)
+# undef socklen_t
+# include <ws2tcpip.h>
+# include <winsock2.h>
+#define MSG_WAITALL 0x8 /* do not complete until packet is completely filled */
+# include <fcntl.h>
+#else
+# include <sys/socket.h>
+# include <netdb.h>
+#endif
+
 
 /* socket = connect_to(host, service/port)
  * Establishes a TCP connection to the named host and port (which can be

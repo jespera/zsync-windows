@@ -18,13 +18,16 @@ include(CheckTypeSize)
 include_directories(${zsync_BINARY_DIR})
 
 add_definitions(-DHAVE_CONFIG_H)
-if(CMAKE_COMPILER_IS_GNUC)
-  set(ZSCFLAGS ${ZSCFLAGS} -D_BSD_SOURCE=1 -D_XOPEN_SOURCE=600 -ffast-math -Wall -Wwrite-strings -Winline -Wextra -Winline -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wundef -Wbad-function-cast -Wcast-align -Wvolatile-register-var)
-  set(CMAKE_CFLAGS "-W -Wall -Wshadow")
+if(CMAKE_COMPILER_IS_GNUCC)
+  set(ZSCFLAGS ${ZSCFLAGS} -D_BSD_SOURCE=1 -D_XOPEN_SOURCE=600 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -ffast-math -Wall -Wwrite-strings -Winline -Wextra -Winline -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wundef -Wbad-function-cast -Wcast-align -Wvolatile-register-var)
+  set(CMAKE_C_FLAGS "-W -Wall -Wshadow")
   set(CMAKE_CXX_FLAGS "-W -Wall -Wshadow")
-endif(CMAKE_COMPILER_IS_GNUC)
+endif(CMAKE_COMPILER_IS_GNUCC)
 
 add_definitions(${ZSCFLAGS})
+set(CMAKE_REQUIRED_DEFINITIONS ${ZSCFLAGS})
+
+message(STATUS "ZSCFLAGS = ${ZSCFLAGS}")
 
 if(WIN32)
   #set(SOCKET_LIBRARY ws2_32) # Winsock 2 -- wsock32??? (that's Winsock 1.1, but it's what configure.ac said for mingw32?
@@ -84,6 +87,9 @@ check_include_file(unistd.h HAVE_UNISTD_H)
 check_include_file(dmalloc.h WITH_DMALLOC)
 
 check_type_size(off_t SIZEOF_OFF_T)
+#if(WIN32 AND SIZEOF_OFF_T EQUAL 4)
+#  set(
+#endif(WIN32 SIZEOF_OFF_T EQUAL 4)
 
 check_type_size(size_t SIZEOF_SIZE_T)
 if(NOT HAVE_SIZEOF_SIZE_T)
@@ -132,6 +138,17 @@ endif(NOT HAVE_SIZEOF_IN_PORT_T)
 #
 #/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
 ##undef _LARGEFILE_SOURCE
+
+# TODO Use http://code.google.com/p/libarchive/source/browse/trunk/build/cmake/CheckFileOffsetBits.cmake for _FILE_OFFSET_BITS
+# TODO Use http://julien.isonoe.net/git/internships/2011-lig/gmxis/plain/modules/gromacs/cmake/gmxTestLargeFiles.cmake for _LARGEFILE_SOURCE
+#      and define _LARGE_FILES also when _LARGEFILE_SOURCE is defined
+ADD_DEFINITIONS(-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES)
+
+if(NOT MSVC)
+  set(_XOPEN_SOURCE 600) # Enable POSIX extensions if present
+  set(BSD_SOURCE 1)
+endif(NOT MSVC)
+
 #
 #/* Define for large files, on AIX-style hosts. */
 ##undef _LARGE_FILES
@@ -166,8 +183,8 @@ if(NOT HAVE_GETADDRINFO)
   set(GETTADDRINFO_SOURCES getaddrinfo.h getaddrinfo.c)
 endif(NOT HAVE_GETADDRINFO)
 
-add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
-target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY})
+#add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
+#target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY})
 
 #X_C_COMPILE_FLAGS($ZS_CFLAGS -g -Wall -Wwrite-strings -Winline -Wextra -Winline -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wundef -Wbad-function-cast -Wcast-align -Wvolatile-register-var -ffast-math)
 
