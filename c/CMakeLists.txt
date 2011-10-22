@@ -15,7 +15,9 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckTypeSize)
 
-include_directories(${zsync_BINARY_DIR})
+set(CMAKE_MODULE_PATH ${zsync_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
+include_directories(${zsync_BINARY_DIR} ${DMALLOC_INCLUDE_DIR})
 
 add_definitions(-DHAVE_CONFIG_H)
 if(CMAKE_COMPILER_IS_GNUCC)
@@ -23,6 +25,8 @@ if(CMAKE_COMPILER_IS_GNUCC)
   set(CMAKE_C_FLAGS "-W -Wall -Wshadow")
   set(CMAKE_CXX_FLAGS "-W -Wall -Wshadow")
 endif(CMAKE_COMPILER_IS_GNUCC)
+
+option(WITH_DMALLOC "Use the dmalloc debugging malloc package" OFF)
 
 add_definitions(${ZSCFLAGS})
 set(CMAKE_REQUIRED_DEFINITIONS ${ZSCFLAGS})
@@ -177,14 +181,14 @@ if(WIN32)
 endif(WIN32)
 
 add_executable(zsyncmake make.c makegz.c makegz.h format_string.h ${WIN32_SOURCES})
-target_link_libraries(zsyncmake zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY})
+target_link_libraries(zsyncmake zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
 
 if(NOT HAVE_GETADDRINFO)
   set(GETTADDRINFO_SOURCES getaddrinfo.h getaddrinfo.c)
 endif(NOT HAVE_GETADDRINFO)
 
 add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
-target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY})
+target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
 
 #X_C_COMPILE_FLAGS($ZS_CFLAGS -g -Wall -Wwrite-strings -Winline -Wextra -Winline -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Wundef -Wbad-function-cast -Wcast-align -Wvolatile-register-var -ffast-math)
 
