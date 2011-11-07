@@ -36,7 +36,7 @@
  */
 char * base64(const char *src)
 {
-	static const char base64[] =
+	static const char base64_chars[] =
 	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	    "abcdefghijklmnopqrstuvwxyz"
 	    "0123456789+/";
@@ -52,10 +52,10 @@ char * base64(const char *src)
 
 	while (l >= 3) {
 		t = (src[0] << 16) | (src[1] << 8) | src[2];
-		dst[0] = base64[(t >> 18) & 0x3f];
-		dst[1] = base64[(t >> 12) & 0x3f];
-		dst[2] = base64[(t >> 6) & 0x3f];
-		dst[3] = base64[(t >> 0) & 0x3f];
+		dst[0] = base64_chars[(t >> 18) & 0x3f];
+		dst[1] = base64_chars[(t >> 12) & 0x3f];
+		dst[2] = base64_chars[(t >> 6) & 0x3f];
+		dst[3] = base64_chars[(t >> 0) & 0x3f];
 		src += 3; l -= 3;
 		dst += 4; r += 4;
 	}
@@ -63,17 +63,17 @@ char * base64(const char *src)
 	switch (l) {
 	case 2:
 		t = (src[0] << 16) | (src[1] << 8);
-		dst[0] = base64[(t >> 18) & 0x3f];
-		dst[1] = base64[(t >> 12) & 0x3f];
-		dst[2] = base64[(t >> 6) & 0x3f];
+		dst[0] = base64_chars[(t >> 18) & 0x3f];
+		dst[1] = base64_chars[(t >> 12) & 0x3f];
+		dst[2] = base64_chars[(t >> 6) & 0x3f];
 		dst[3] = '=';
 		dst += 4;
 		r += 4;
 		break;
 	case 1:
 		t = src[0] << 16;
-		dst[0] = base64[(t >> 18) & 0x3f];
-		dst[1] = base64[(t >> 12) & 0x3f];
+		dst[0] = base64_chars[(t >> 18) & 0x3f];
+		dst[1] = base64_chars[(t >> 12) & 0x3f];
 		dst[2] = dst[3] = '=';
 		dst += 4;
 		r += 4;
