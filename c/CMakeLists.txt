@@ -17,8 +17,6 @@ include(CheckTypeSize)
 
 set(CMAKE_MODULE_PATH ${zsync_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-include(CheckLargeFileSupport)
-
 include_directories(${zsync_BINARY_DIR} ${DMALLOC_INCLUDE_DIR})
 
 add_definitions(-DHAVE_CONFIG_H)
@@ -29,6 +27,8 @@ if(CMAKE_COMPILER_IS_GNUCC)
 endif(CMAKE_COMPILER_IS_GNUCC)
 
 option(WITH_DMALLOC "Use the dmalloc debugging malloc package" OFF)
+option(WITH_LARGE_FILE_SUPPORT "Enable support for files > 2 GiB on 32-bit platforms. Do not disable unless you know very well what you are doing." ON)
+
 
 add_definitions(${ZSCFLAGS})
 set(CMAKE_REQUIRED_DEFINITIONS ${ZSCFLAGS})
@@ -139,7 +139,10 @@ endif(NOT HAVE_SIZEOF_IN_PORT_T)
 #Define to 1 if `h_errno' is declared by <netdb.h> */
 #undef H_ERRNO_DECLARED
 
-check_large_file_support()
+if(WITH_LARGE_FILE_SUPPORT)
+  include(CheckLargeFileSupport)
+  check_large_file_support()
+endif(WITH_LARGE_FILE_SUPPORT)
 
 if(NOT MSVC)
   set(_XOPEN_SOURCE 600) # Enable POSIX extensions if present
