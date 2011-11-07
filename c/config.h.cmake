@@ -101,7 +101,13 @@
 #cmakedefine _BSD_SOURCE @_BSD_SOURCE@
 
 /* Number of bits in a file offset, on hosts where this is settable. */
-/* #undef _FILE_OFFSET_BITS */
+#cmakedefine _FILE_OFFSET_BITS @_FILE_OFFSET_BITS@
+
+/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
+#cmakedefine _LARGEFILE_SOURCE @_LARGEFILE_SOURCE@
+
+/* Define for large files, on AIX-style hosts. */
+#cmakedefine _LARGE_FILES @_LARGE_FILES@
 
 /*
 #if defined(_WIN32) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
@@ -122,12 +128,6 @@
 #  define _off_t off_t
 #endif
 */
-
-/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
-/* #undef _LARGEFILE_SOURCE */
-
-/* Define for large files, on AIX-style hosts. */
-/* #undef _LARGE_FILES */
 
 /* Enable POSIX extensions if present */
 #cmakedefine _XOPEN_SOURCE @_XOPEN_SOURCE@
