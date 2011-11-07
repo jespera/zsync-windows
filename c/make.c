@@ -388,10 +388,10 @@ void read_stream_write_blocksums(FILE * fin, FILE * fout) {
  */
 void fcopy(FILE * fin, FILE * fout) {
     unsigned char buf[4096];
-    size_t len;
+    size_t length;
 
-    while ((len = fread(buf, 1, sizeof(buf), fin)) > 0) {
-        if (fwrite(buf, 1, len, fout) < len)
+    while ((length = fread(buf, 1, sizeof(buf), fin)) > 0) {
+        if (fwrite(buf, 1, length, fout) < length)
             break;
     }
     if (ferror(fin)) {
@@ -409,9 +409,9 @@ void fcopy(FILE * fin, FILE * fout) {
  */
 void fcopy_hashes(FILE * fin, FILE * fout, size_t rsum_bytes, size_t hash_bytes) {
     unsigned char buf[20];
-    size_t len;
+    size_t length;
 
-    while ((len = fread(buf, 1, sizeof(buf), fin)) > 0) {
+    while ((length = fread(buf, 1, sizeof(buf), fin)) > 0) {
         /* write trailing rsum_bytes of the rsum (trailing because the second part of the rsum is more useful in practice for hashing), and leading checksum_bytes of the checksum */
         if (fwrite(buf + 4 - rsum_bytes, 1, rsum_bytes, fout) < rsum_bytes)
             break;
