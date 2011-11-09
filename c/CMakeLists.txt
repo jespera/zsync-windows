@@ -150,6 +150,7 @@ endif(NOT HAVE_SIZEOF_IN_PORT_T)
 # TODO
 #Define to 1 if `h_errno' is declared by <netdb.h> */
 #undef H_ERRNO_DECLARED
+check_symbol_exists(h_errno netdb.h H_ERRNO_DECLARED)
 
 if(WITH_LARGE_FILE_SUPPORT)
   include(CheckLargeFileSupport)

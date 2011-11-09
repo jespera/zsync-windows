@@ -54,7 +54,7 @@
 #cmakedefine HAVE_UNISTD_H 1
 
 /* Define to 1 if `h_errno' is declared by <netdb.h> */
-/* #undef H_ERRNO_DECLARED */
+#cmakedefine H_ERRNO_DECLARED 1
 
 /* Name of package */
 #define PACKAGE "@PACKAGE@"
