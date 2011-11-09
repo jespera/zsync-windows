@@ -12,6 +12,7 @@ set(PACKAGE_URL "")
 set(VERSION "${PACKAGE_VERSION}")
 
 include(CheckFunctionExists)
+include(CheckSymbolExists)
 include(CheckIncludeFile)
 include(CheckTypeSize)
 
@@ -55,6 +56,7 @@ else(MSVC)
 endif(MSVC)
 
 if(WIN32)
+  check_symbol_exists(gmtime_r time.h HAVE_GMTIME_R)
   check_include_file(wspiapi.h HAVE_WSPIAPI_H)
   if (NOT HAVE_WSPIAPI_H)
     message(STATUS "WARNING: Without wspiapi.h, this build will only work on Windows XP and newer versions")

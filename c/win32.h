@@ -3,10 +3,6 @@
 
 #ifdef _WIN32
 
-//#ifdef HAVE_CONFIG_H
-//#  include "config.h"
-//#endif
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -132,8 +128,8 @@ int mkstemp (char *tmpl);
  *****************************************************************************/
 
 ssize_t pread (int fd, void *buf, size_t count, off_t offset);
-/* ssize_t pwrite(int fd, const void * buf, size_t size, off_t offset); */
 
+#ifndef HAVE_GMTIME_R
 /*****************************************************************************
  * gmtime_r.c: POSIX gmtime_r() replacement
  *****************************************************************************
@@ -154,6 +150,7 @@ ssize_t pread (int fd, void *buf, size_t count, off_t offset);
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 struct tm *gmtime_r (const time_t *timep, struct tm *result);
+#endif // HAVE_GMTIME_R
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //   w32util.c        Windows porting functions
@@ -217,6 +214,6 @@ int socket_is_socket( int sfd );
  */
 FILE * w32_tmpfile (void);
 
-#endif
+#endif // _WIN32
 
 #endif // H_WIN32

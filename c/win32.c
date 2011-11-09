@@ -1,5 +1,6 @@
 #ifdef _WIN32
 
+#include "config.h"
 #include "win32.h"
 #include <time.h>
 #include <stdlib.h>
@@ -409,6 +410,8 @@ ssize_t pwrite(int fd, const void * buf, size_t size, off_t offset) {
     return wr;
 }
 */
+
+#ifndef HAVE_GMTIME_R
 /*****************************************************************************
  * gmtime_r.c: POSIX gmtime_r() replacement
  *****************************************************************************
@@ -437,6 +440,7 @@ struct tm *gmtime_r (const time_t *timep, struct tm *result)
     *result = *s;
     return result;
 }
+#endif
 
 /*********************************************************************
  *********************************************************************

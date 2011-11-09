@@ -149,6 +149,8 @@
 #  define socklen_t @SOCKLEN_T_REPLACEMENT@
 #endif
 
+#cmakedefine HAVE_GMTIME_R @HAVE_GMTIME_R@
+
 #ifdef _WIN32
 //#  undef socket
 //#  undef close_socket
