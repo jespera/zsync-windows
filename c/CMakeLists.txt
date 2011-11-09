@@ -104,7 +104,7 @@ if(NOT HAVE_SIZEOF_SIZE_T)
   set(SIZE_T_REPLACEMENT "unsigned int")
 endif(NOT HAVE_SIZEOF_SIZE_T)
 
-set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
+set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h sys/types.h)
 check_type_size(socklen_t SIZEOF_SOCKLEN_T)
 if(NOT HAVE_SIZEOF_SOCKLEN_T)
   set(SOCKLEN_T_REPLACEMENT "int")
@@ -115,7 +115,17 @@ set(CMAKE_EXTRA_INCLUDE_FILES )
 #   long' according with size of `sin_port' in `struct sockaddr_in', if
 #   <sys/types.h>, <sys/socket.h> or <netinet/in.h> does not define
 #   `in_port_t'. */
-set(CMAKE_EXTRA_INCLUDE_FILES sys/types.h sys/socket.h netinet/in.h)
+check_include_file(sys/socket.h HAVE_SOCKET_H)
+if(HAVE_SOCKET_H)
+  set(SOCKET_H sys/socket.h)
+endif(HAVE_SOCKET_H)
+
+check_include_file(netinet/in.h HAVE_NETINET_IN_H)
+if(HAVE_NETINET_IN_H)
+  set(NETINET_IN_H netinet/in.h)
+endif(HAVE_NETINET_IN_H)
+
+set(CMAKE_EXTRA_INCLUDE_FILES sys/types.h ${SOCKET_H} ${NETINET_IN_H})
 check_type_size(in_port_t SIZEOF_IN_PORT_T)
 if(NOT HAVE_SIZEOF_IN_PORT_T)
   check_type_size("unsigned char" SIZEOF_UNSIGNED_CHAR)
