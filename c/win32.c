@@ -339,7 +339,7 @@ mkstemp (char *tmpl)
           return -1;
       }
 
-      int fd = _open_osfhandle((long int)hFile, _O_CREAT | _O_RDWR | _O_TEMPORARY);
+      fd = _open_osfhandle((long int)hFile, _O_CREAT | _O_RDWR | _O_TEMPORARY);
 
       if (fd >= 0)
       {
