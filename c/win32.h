@@ -9,6 +9,7 @@
 
 #include <time.h>
 #include <string.h>
+#include <winsock2.h>
 #include <windows.h>
 #include <stdio.h>
 #include <sys/stat.h>
