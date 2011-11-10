@@ -564,8 +564,6 @@ off_t get_len(FILE * f) {
     if (fstat(fileno(f), &s) == -1)
         return 0;
 
-    printf("\nSIZEOF(off_t) = %d", sizeof(off_t));
-    printf("\nFILE SIZE IS " OFF_T_PF, s.st_size);
     return s.st_size;
 }
 
@@ -690,18 +688,8 @@ int main(int argc, char **argv) {
 
     /* If not user-specified, choose a blocksize based on size of the input file */
     if (!blocksize) {
-        off_t file_len = get_len(instream);
-        printf("\nFILE_LEN = " OFF_T_PF, file_len);
-        //blocksize = (file_len < 100000000) ? 2048 : 4096;
-        //            3798824960
-        if(file_len < 100000000) {
-            blocksize = 2048;
-        } else {
-            blocksize = 4096;
-        }
-        //blocksize = (get_len(instream) < 100000000) ? 2048 : 4096;
+        blocksize = (get_len(instream) < 100000000) ? 2048 : 4096;
     }
-    printf("\nWE WILL USE BLOCKSIZE = " SIZE_T_PF, blocksize);
 
     /* If we've been asked to compress this file, do so and substitute the
      * compressed version for the original */
