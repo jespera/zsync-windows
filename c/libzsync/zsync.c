@@ -365,6 +365,7 @@ static int zsync_read_blocksums(struct zsync_state *zs, FILE * f,
  */
 static time_t parse_822(const char* ts) {
     struct tm t;
+    memset(&t, 0, sizeof(struct tm));
 
     if (strptime(ts, "%a, %d %b %Y %H:%M:%S %z", &t) == NULL
         && strptime(ts, "%d %b %Y %H:%M:%S %z", &t) == NULL) {
