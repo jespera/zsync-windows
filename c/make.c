@@ -563,7 +563,6 @@ off_t get_len(FILE * f) {
 
     if (fstat(fileno(f), &s) == -1)
         return 0;
-
     return s.st_size;
 }
 

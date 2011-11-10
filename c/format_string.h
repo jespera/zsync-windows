@@ -30,18 +30,14 @@
 
 #if SIZEOF_OFF_T == 8
 # ifdef PRIu64
-#  warning "Using OFF_T_PF = % PRIu64"
 #  define OFF_T_PF "%" PRIu64
 # else
-#  warning "Using OFF_T_PF = %llu"
 #  define OFF_T_PF "%llu"
 # endif
 #else
 # ifdef PRIu32
-#  warning "Using OFF_T_PF = % PRIu32"
 #  define OFF_T_PF "%" PRIu32
 # else
-#  warning "Using OFF_T_PF = %lu"
 #  define OFF_T_PF "%lu"
 # endif
 #endif

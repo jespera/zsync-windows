@@ -611,7 +611,6 @@ static int zsync_sha1(struct zsync_state *zs, int fh) {
             SHA1Update(&shactx, buf, rc);
         }
         if (rc < 0) {
-            printf("\nError in file %s, line %d\n", __FILE__, __LINE__);
             perror("read");
             return -1;
         }
