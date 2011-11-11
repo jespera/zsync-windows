@@ -30,6 +30,23 @@ endif(CMAKE_COMPILER_IS_GNUCC)
 option(WITH_DMALLOC "Use the dmalloc debugging malloc package" OFF)
 option(WITH_LARGE_FILE_SUPPORT "Enable support for files > 2 GiB on 32-bit platforms. Do not disable unless you know very well what you are doing." ON)
 
+if(WITH_LARGE_FILE_SUPPORT)
+  include(CheckLargeFileSupport)
+  check_large_file_support()
+
+  if(_FILE_OFFSET_BITS)
+    set(ZSCFLAGS ${ZSCFLAGS} -D_FILE_OFFSET_BITS=${_FILE_OFFSET_BITS})
+  endif(_FILE_OFFSET_BITS)
+
+  if(_LARGEFILE_SOURCE)
+    set(ZSCFLAGS ${ZSCFLAGS} -D_LARGEFILE_SOURCE)
+  endif(_LARGEFILE_SOURCE)
+
+  if(_FILE_OFFSET_BITS)
+    set(ZSCFLAGS ${ZSCFLAGS} -D_LARGE_FILES)
+  endif(_FILE_OFFSET_BITS)
+endif(WITH_LARGE_FILE_SUPPORT)
+
 
 add_definitions(${ZSCFLAGS})
 set(CMAKE_REQUIRED_DEFINITIONS ${ZSCFLAGS})
@@ -146,16 +163,7 @@ if(NOT HAVE_SIZEOF_IN_PORT_T)
   endif(SIZEOF_IN_PORT_T_RUN_OUTPUT EQUAL SIZEOF_UNSIGNED_CHAR)
 endif(NOT HAVE_SIZEOF_IN_PORT_T)
 
-
-# TODO
-#Define to 1 if `h_errno' is declared by <netdb.h> */
-#undef H_ERRNO_DECLARED
 check_symbol_exists(h_errno netdb.h H_ERRNO_DECLARED)
-
-if(WITH_LARGE_FILE_SUPPORT)
-  include(CheckLargeFileSupport)
-  check_large_file_support()
-endif(WITH_LARGE_FILE_SUPPORT)
 
 if(NOT MSVC)
   set(_XOPEN_SOURCE 600) # Enable POSIX extensions if present
