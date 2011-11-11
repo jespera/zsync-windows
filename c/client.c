@@ -728,7 +728,7 @@ int main(int argc, char **argv) {
     free(temp_file);
 
 #ifdef _WIN32
-    WSACleanup();
+//    WSACleanup(); // FIXME This is mandatory on Windows but it crashes for some reason, see http://www.assembla.com/spaces/zsync-windows/tickets/13
 #endif
 
     return 0;
