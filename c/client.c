@@ -413,16 +413,16 @@ int fetch_remaining_blocks(struct zsync_state *zs) {
     /* Keep going until we're done or have no useful URLs left */
     while (zsync_status(zs) < 2 && ok_urls) {
         /* Still need data; pick a URL to use. */
-        int try = rand() % n;
+        int attempt = rand() % n;
 
-        if (!status[try]) {
-            const char *tryurl = url[try];
+        if (!status[attempt]) {
+            const char *tryurl = url[attempt];
 
             /* Try fetching data from this URL */
             int rc = fetch_remaining_blocks_http(zs, tryurl, utype);
             if (rc != 0) {
                 fprintf(stderr, "failed to retrieve from %s\n", tryurl);
-                status[try] = 1;
+                status[attempt] = 1;
                 ok_urls--;
             }
         }
@@ -677,9 +677,9 @@ int main(int argc, char **argv) {
                If that fails due to EPERM, it is probably a filesystem that
                doesn't support hard-links - so try just renaming it to the
                backup filename. */
-            #ifdef WIN32
+#ifdef _WIN32
             ok = 0;
-            #else
+#else
             if (link(filename, oldfile_backup) != 0
                 && (errno != EPERM || rename(filename, oldfile_backup) != 0)) {
                 perror("linkname");
@@ -688,7 +688,7 @@ int main(int argc, char **argv) {
                         filename, temp_file);
                 ok = 0;         /* Prevent overwrite of old file below */
             }
-            #endif
+#endif
         }
         if (ok) {
             /* Rename the file to the desired name */
@@ -718,7 +718,7 @@ int main(int argc, char **argv) {
     free(referer);
     free(temp_file);
 
-#ifdef WIN32
+#ifdef _WIN32
     WSACleanup();
 #endif
 
