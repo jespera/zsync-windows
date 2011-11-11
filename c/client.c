@@ -42,7 +42,7 @@
 #include "url.h"
 #include "progress.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 # include <winsock2.h>
 #endif
 
@@ -477,6 +477,15 @@ int main(int argc, char **argv) {
         printf("WSAStartup failed with error: %d\n", err);
         exit(1);
     }
+
+    if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
+        /* Tell the user that we could not find a usable */
+        /* WinSock DLL.                                  */
+        printf("Could not find a usable version of Winsock.dll\n");
+        WSACleanup();
+        exit(1);
+    }
+
 #endif
 
     {   /* Option parsing */
