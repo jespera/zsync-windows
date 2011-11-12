@@ -42,11 +42,6 @@
 #include "url.h"
 #include "progress.h"
 
-#ifdef _WIN32
-# include <winsock2.h>
-#endif
-
-
 /* FILE* f = open_zcat_pipe(file_str)
  * Returns a (popen) filehandle which when read returns the un-gzipped content
  * of the given file. Or NULL on error; or the filehandle may fail to read. It

@@ -56,6 +56,7 @@
 #include "zsync.h"
 #include "sha1.h"
 #include "zmap.h"
+#include "format_string.h"
 
 /* Probably we really want a table of compression methods here. But I've only
  * implemented SHA1 so this is it for now. */
@@ -213,7 +214,7 @@ struct zsync_state *zsync_begin(FILE * f) {
             else if (!strcmp(buf, "Blocksize")) {
                 zs->blocksize = atol(p);
                 if (zs->blocksize < 0 || (zs->blocksize & (zs->blocksize - 1))) {
-                    fprintf(stderr, "nonsensical blocksize %ld\n", zs->blocksize);
+                    fprintf(stderr, "nonsensical blocksize" SIZE_T_PF "\n", zs->blocksize);
                     free(zs);
                     return NULL;
                 }

@@ -38,7 +38,7 @@
 # endif
 #else
 # ifdef PRIu32
-#  define OFF_T_PF "%" PRIu32
+#  define OFF_T_PF "%l" PRIu32
 # else
 #  define OFF_T_PF "%lu"
 # endif
