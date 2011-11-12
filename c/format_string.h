@@ -17,12 +17,14 @@
 #include "config.h"
 
 // TODO Check with http://stackoverflow.com/questions/586928/how-should-i-print-types-like-off-t-and-size-t
+// Windows: http://msdn.microsoft.com/en-us/library/tcxf1dw6.aspx
+// glibc: http://linux.die.net/man/3/fprintf
 
 #ifdef PRIu32
-# ifdef __MINGW32__ // All Win32? Does %lu make sense or should I leave %zd?
-#  define SIZE_T_PF "%lu"
+# ifdef _WIN32
+#   define SIZE_T_PF "%I" PRIu32
 # else
-#  define SIZE_T_PF "%zd"
+#   define SIZE_T_PF "%zd"
 # endif
 #else
 # define SIZE_T_PF "%u"
@@ -41,4 +43,3 @@
 #  define OFF_T_PF "%lu"
 # endif
 #endif
-
