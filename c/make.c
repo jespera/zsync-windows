@@ -178,9 +178,9 @@ static void write_zmap_delta(long long *prev_in, long long *prev_out,
  */
 void do_zstream(FILE * fin, FILE * fout, const char *bufsofar, size_t got) {
     z_stream zs;
-    Bytef *inbuf = malloc(blocksize);
+    Bytef *inbuf = (Bytef*) malloc(blocksize);
     const size_t inbufsz = blocksize;
-    Bytef *outbuf = malloc(blocksize);
+    Bytef *outbuf = (Bytef*) malloc(blocksize);
     int eoz = 0;
     int header_bits;
     long long prev_in = 0;
@@ -216,7 +216,7 @@ void do_zstream(FILE * fin, FILE * fout, const char *bufsofar, size_t got) {
             header_bits = 8 * header_bytes;
             got -= header_bytes;
 
-            zhead = malloc(1 + 2 * header_bytes);
+            zhead = (char*) malloc(1 + 2 * header_bytes);
             for (i = 0; i < header_bytes; i++)
                 sprintf(zhead + 2 * i, "%02x", (unsigned char)bufsofar[i]);
         }
@@ -360,7 +360,7 @@ void do_zstream(FILE * fin, FILE * fout, const char *bufsofar, size_t got) {
  * given data. No compression handling.
  */
 void read_stream_write_blocksums(FILE * fin, FILE * fout) {
-    unsigned char *buf = malloc(blocksize);
+    unsigned char *buf = (unsigned char*) malloc(blocksize);
 
     if (!buf) {
         fprintf(stderr, "out of memory\n");
@@ -448,7 +448,7 @@ static int read_sample_and_close(FILE * f, size_t l, void *buf) {
 /* str = encode_filename(filename_str)
  * Returns shell-escaped version of a given (filename) string */
 static char *encode_filename(const char *fname) {
-    char *cmd = malloc(2 + strlen(fname) * 2);
+    char *cmd = (char*) malloc(2 + strlen(fname) * 2);
     if (!cmd)
         return NULL;
 
@@ -551,7 +551,7 @@ char *guess_gzip_options(const char *f) {
         }
         else {  /* Add --no-name to options to return */
             static const char noname[] = { "--no-name" };
-            char* opts = malloc(strlen(o)+strlen(noname)+2);
+            char* opts = (char*) malloc(strlen(o)+strlen(noname)+2);
             if (o[0]) {
                 strcpy(opts, o);
                 strcat(opts, " ");

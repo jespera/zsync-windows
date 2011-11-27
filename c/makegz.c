@@ -99,8 +99,8 @@ FILE *optimal_gzip(FILE * ffin, const char *fout, size_t blocksize) {
 
     {   /* Now write compressed content */
         z_stream zs;
-        unsigned char *inbuf = malloc(blocksize);
-        unsigned char *outbuf = malloc(blocksize + 500);
+        unsigned char *inbuf = (unsigned char*) malloc(blocksize);
+        unsigned char *outbuf = (unsigned char*) malloc(blocksize + 500);
         int err, r;
         unsigned long crc = crc32(0L, Z_NULL, 0);
 
