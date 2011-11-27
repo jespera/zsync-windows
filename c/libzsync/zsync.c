@@ -37,7 +37,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <unistd.h>
+
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
@@ -329,6 +333,7 @@ struct zsync_state *zsync_begin(FILE * f) {
 static int zsync_read_blocksums(struct zsync_state *zs, FILE * f,
                                 int rsum_bytes, int checksum_bytes,
                                 int seq_matches) {
+    zs_blockid id = 0;
     /* Make the rcksum_state first */
     if (!(zs->rs = rcksum_init(zs->blocks, zs->blocksize, rsum_bytes,
                                checksum_bytes, seq_matches))) {
@@ -336,7 +341,6 @@ static int zsync_read_blocksums(struct zsync_state *zs, FILE * f,
     }
 
     /* Now read in and store the checksums */
-    zs_blockid id = 0;
     for (; id < zs->blocks; id++) {
         struct rsum r = { 0, 0 };
         unsigned char checksum[CHECKSUM_SIZE];

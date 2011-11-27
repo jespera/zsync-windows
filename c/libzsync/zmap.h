@@ -16,6 +16,12 @@
 #include "zsglobal.h"
 #include "pack.h"
 
+#ifdef HAVE_INTTYPES_H
+#  include <inttypes.h>
+#else
+#  include "msvc-stdint.h"
+#endif
+
 PACK(
 struct gzblock {
   uint16_t inbitoffset;

@@ -106,6 +106,7 @@ check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(stdlib.h HAVE_STDLIB_H)
 check_include_file(strings.h HAVE_STRINGS_H)
 check_include_file(string.h HAVE_STRING_H)
+check_include_file(sys/param.h HAVE_SYS_PARAM_H)
 check_include_file(sys/stat.h HAVE_SYS_STAT_H)
 check_include_file(sys/types.h HAVE_SYS_TYPES_H)
 check_include_file(unistd.h HAVE_UNISTD_H)
@@ -127,6 +128,16 @@ if(NOT HAVE_SIZEOF_SOCKLEN_T)
   set(SOCKLEN_T_REPLACEMENT "int")
 endif(NOT HAVE_SIZEOF_SOCKLEN_T)
 set(CMAKE_EXTRA_INCLUDE_FILES )
+
+check_type_size(socklen_t SIZEOF_SOCKLEN_T)
+if(NOT HAVE_SIZEOF_SOCKLEN_T)
+  set(SOCKLEN_T_REPLACEMENT "int")
+endif(NOT HAVE_SIZEOF_SOCKLEN_T)
+
+check_type_size(ssize_t SIZEOF_SSIZE_T)
+if(NOT HAVE_SIZEOF_SSIZE_T)
+  set(SSIZE_T_REPLACEMENT "int")
+endif(NOT HAVE_SIZEOF_SSIZE_T)
 
 # Define to `unsigned char', `unsigned short', `unsigned int' or `unsigned
 #   long' according with size of `sin_port' in `struct sockaddr_in', if
@@ -164,6 +175,8 @@ if(NOT HAVE_SIZEOF_IN_PORT_T)
 endif(NOT HAVE_SIZEOF_IN_PORT_T)
 
 check_symbol_exists(h_errno netdb.h H_ERRNO_DECLARED)
+
+try_compile(HAVE_ATTRIBUTE_PURE ${zsync_BINARY_DIR}/cmake ${zsync_SOURCE_DIR}/cmake/pure.c)
 
 if(NOT MSVC)
   set(_XOPEN_SOURCE 600) # Enable POSIX extensions if present

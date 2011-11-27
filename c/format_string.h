@@ -13,8 +13,13 @@
  *   COPYING file for details.
  */
 
-#include <inttypes.h>
 #include "config.h"
+
+#ifdef HAVE_INTTYPES_H
+#  include <inttypes.h>
+#else
+#  include "msvc-stdint.h"
+#endif
 
 // TODO Check with http://stackoverflow.com/questions/586928/how-should-i-print-types-like-off-t-and-size-t
 // Windows: http://msdn.microsoft.com/en-us/library/tcxf1dw6.aspx

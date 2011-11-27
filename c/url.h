@@ -13,6 +13,10 @@
  *   COPYING file for details.
  */
 
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
 extern const char http_scheme[];
 
 /* Given an HTTP URL, return the path path of the URL as the return value, and
@@ -22,6 +26,6 @@ extern const char http_scheme[];
  */
 char* get_http_host_port(const char* url, char* hostn, int hnlen, char** port);
 
-char* __attribute__((pure)) make_url_absolute(const char* base, const char* url);
+char* PURE_FUNCTION make_url_absolute(const char* base, const char* url);
 
-int __attribute__((pure)) is_url_absolute(const char* url);
+int PURE_FUNCTION is_url_absolute(const char* url);

@@ -149,7 +149,25 @@
 #  define socklen_t @SOCKLEN_T_REPLACEMENT@
 #endif
 
+#cmakedefine SSIZE_T_REPLACEMENT 1
+#ifdef SSIZE_T_REPLACEMENT
+#  define ssize_t @SSIZE_T_REPLACEMENT@
+#endif
+
 #cmakedefine HAVE_GMTIME_R @HAVE_GMTIME_R@
+
+#cmakedefine HAVE_ATTRIBUTE_PURE
+#ifdef HAVE_ATTRIBUTE_PURE
+#  define PURE_FUNCTION __attribute__((pure))
+#else
+#  define PURE_FUNCTION const
+#endif
+
+#ifdef _MSC_VER
+#  define NORETURN __declspec(noreturn)
+#else
+#  define NORETURN __attribute__((noreturn))
+#endif
 
 #ifdef _WIN32
 //#  undef socket
@@ -162,6 +180,10 @@
 #  define fdclose w32_fdclose
 #  define tmpfile w32_tmpfile
 #  include "win32.h"
+
+#ifdef _MSC_VER
+#define inline _inline
+#endif
 
 #  define WIN32_LEAN_AND_MEAN
 

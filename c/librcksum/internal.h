@@ -22,6 +22,10 @@
  * checksum: hopefully-collision-resistant MD4 checksum of the block
  */
 
+#ifdef _MSC_VER
+#  define inline _inline
+#endif
+
 struct hash_entry {
     struct hash_entry *next;    /* next entry with the same rsum */
     struct rsum r;

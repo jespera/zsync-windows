@@ -20,10 +20,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+
 #include <ctype.h>
 #include <errno.h>
-#include <libgen.h>
+//#include <libgen.h>
 #include <math.h>
 #include <time.h>
 
@@ -37,9 +41,12 @@
 
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
+#elif defined(_MSC_VER)
+#  include "msvc-stdint.h"
+#else
+#  include <sys/types.h>
 #endif
 
-#include <sys/types.h>
 #include <sys/stat.h>
 
 #ifdef WITH_DMALLOC
@@ -64,7 +71,7 @@ int verbose = 0;
 static int no_look_inside;
 
 /* stream_error(function, stream) - Exit with IO-related error message */
-void __attribute__ ((noreturn)) stream_error(const char *func, FILE * stream) {
+void NORETURN stream_error(const char *func, FILE * stream) {
     fprintf(stderr, "%s: %s\n", func, strerror(ferror(stream)));
     exit(2);
 }

@@ -83,7 +83,7 @@ char *get_http_host_port(const char *url, char *hostn, int hnlen, char **port) {
 /* abs_url_str = make_url_absolute(base_str, url_str)
  * Returns an absolute version of url_str relative to base_str, as a malloced
  * string. Or NULL on error. */
-char * __attribute__ ((pure)) make_url_absolute(const char *base, const char *url) {
+char * PURE_FUNCTION make_url_absolute(const char *base, const char *url) {
     if (is_url_absolute(url))
         return strdup(url);
 
@@ -151,7 +151,7 @@ char * __attribute__ ((pure)) make_url_absolute(const char *base, const char *ur
  */
 static const char special[] = { ":/?" };
 
-int __attribute__ ((pure)) is_url_absolute(const char *url) {
+int PURE_FUNCTION is_url_absolute(const char *url) {
     /* find end of first no-special-URL-characters part of the string */
     int n = strcspn(url, special);
 

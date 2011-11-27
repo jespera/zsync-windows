@@ -12,9 +12,11 @@
 #include "config.h"
 
 #ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
+#  include <inttypes.h>
+#elif defined(_MSC_VER)
+#  include "msvc-stdint.h"
 #else
-#include <sys/types.h>
+#  include <sys/types.h>
 #endif
 
 #define	SHA1_BLOCK_LENGTH		64
