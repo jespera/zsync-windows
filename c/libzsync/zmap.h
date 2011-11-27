@@ -19,7 +19,7 @@
 #ifdef HAVE_INTTYPES_H
 #  include <inttypes.h>
 #else
-#  include "msvc-stdint.h"
+#  include "msvc-inttypes.h"
 #endif
 
 PACK(

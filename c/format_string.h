@@ -18,7 +18,7 @@
 #ifdef HAVE_INTTYPES_H
 #  include <inttypes.h>
 #else
-#  include "msvc-stdint.h"
+#  include "msvc-inttypes.h"
 #endif
 
 // TODO Check with http://stackoverflow.com/questions/586928/how-should-i-print-types-like-off-t-and-size-t

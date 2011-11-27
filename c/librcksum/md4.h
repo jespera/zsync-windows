@@ -21,7 +21,7 @@
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
 #elif defined(_MSC_VER)
-#include "msvc-stdint.h"
+#include "msvc-inttypes.h"
 #else
 #include <sys/types.h>
 #endif
