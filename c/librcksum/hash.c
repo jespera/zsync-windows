@@ -76,7 +76,7 @@ int build_hash(struct rcksum_state *z) {
 
     /* Allocate bit-table based on rsum */
     z->bithashmask = (2 << (i + BITHASHBITS)) - 1;
-    z->bithash = calloc(z->bithashmask + 1, 1);
+    z->bithash = (unsigned char*) calloc(z->bithashmask + 1, 1);
     if (!z->bithash) {
         free(z->rsum_hash);
         z->rsum_hash = NULL;

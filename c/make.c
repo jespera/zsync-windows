@@ -27,11 +27,22 @@
 
 #include <ctype.h>
 #include <errno.h>
-//#include <libgen.h>
-#include <math.h>
+
+#ifdef _MSC_VER
+#  include <io.h>
+#else
+#  include <libgen.h>
+#endif
+
+#ifdef _MSC_VER
+#  include <cmath>
+#else
+#  include <math.h>
+#endif
+
 #include <time.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 # undef socklen_t
 # include <windows.h>
 # include <ws2tcpip.h>
@@ -51,6 +62,10 @@
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
+#endif
+
+#ifdef _MSC_VER
+#  include "msvc-getopt.h"
 #endif
 
 #include "makegz.h"
@@ -643,11 +658,11 @@ int main(int argc, char **argv) {
                 }
                 break;
             case 'u':
-                url = realloc(url, (nurls + 1) * sizeof *url);
+                url = (char**) realloc(url, (nurls + 1) * sizeof *url);
                 url[nurls++] = optarg;
                 break;
             case 'U':
-                Uurl = realloc(Uurl, (nUurls + 1) * sizeof *Uurl);
+                Uurl = (char**) realloc(Uurl, (nUurls + 1) * sizeof *Uurl);
                 Uurl[nUurls++] = optarg;
                 break;
             case 'v':
@@ -684,8 +699,13 @@ int main(int argc, char **argv) {
             }
 
             /* Use supplied filename as the target filename */
-            if (!fname)
+            if (!fname) {
+#ifdef _MSC_VER
+                _splitpath_s(argv[optind], NULL, 0, NULL, 0, fname, strlen(fname), NULL, 0);
+#else
                 fname = basename(argv[optind]);
+#endif
+			}
         }
         else {
             instream = stdin;
@@ -708,7 +728,7 @@ int main(int argc, char **argv) {
                 tryfname = fname;
             }
             if (tryfname) {
-                newfname = malloc(strlen(tryfname) + 4);
+                newfname = (char*) malloc(strlen(tryfname) + 4);
                 if (!newfname)
                     exit(1);
                 strcpy(newfname, tryfname);
@@ -746,19 +766,19 @@ int main(int argc, char **argv) {
 
     {   /* Decide how long a rsum hash and checksum hash per block we need for this file */
         seq_matches = len > blocksize ? 2 : 1;
-        rsum_len = ceil(((log(len) + log(blocksize)) / log(2) - 8.6) / seq_matches / 8);
+        rsum_len = ceil(((log((float)len) + log((float)blocksize)) / log(2.0) - 8.6) / seq_matches / 8);
 
         /* min and max lengths of rsums to store */
         if (rsum_len > 4) rsum_len = 4;
         if (rsum_len < 2) rsum_len = 2;
 
         /* Now the checksum length; min of two calculations */
-        checksum_len = ceil(
-                (20 + (log(len) + log(1 + len / blocksize)) / log(2))
+        checksum_len = ceil((float)
+                (20 + (log((float)len) + log((float)1 + len / blocksize)) / log(2.0))
                 / seq_matches / 8);
         {
             int checksum_len2 =
-                (7.9 + (20 + log(1 + len / blocksize) / log(2))) / 8;
+                (7.9 + (20 + log((float)1 + len / blocksize) / log(2.0))) / 8;
             if (checksum_len < checksum_len2)
                 checksum_len = checksum_len2;
         }
@@ -823,7 +843,7 @@ int main(int argc, char **argv) {
         }
     }
     if (!outfname && fname) {
-        outfname = malloc(strlen(fname) + 10);
+        outfname = (char*) malloc(strlen(fname) + 10);
         sprintf(outfname, "%s.zsync", fname);
     }
 
@@ -860,7 +880,7 @@ int main(int argc, char **argv) {
 
             if (gmtime_r(&mtime, &mtime_tm) != NULL) {
                 size_t nc = 0;
-#ifdef WIN32
+#ifdef _WIN32
                 /*
                   strftime from MSVCRT is broken in regards to the timezone (%z),
                   see http://permalink.gmane.org/gmane.comp.gnu.mingw.user/20292

@@ -79,11 +79,11 @@ struct zmap *zmap_make(const struct gzblock *zb, int n) {
     int bc = 0;     /* And this is the number of map points see in the current zlib block */
 
     /* Allocate zmap, space for all its entries, fill in fields */
-    struct zmap *m = malloc(sizeof(struct zmap));
+    struct zmap *m = (struct zmap*) malloc(sizeof(struct zmap));
     if (!m)
         return m;
     m->n = n;
-    m->e = malloc(sizeof(struct zmapentry) * n);
+    m->e = (struct zmapentry*) malloc(sizeof(struct zmapentry) * n);
     if (!m->e) {
         free(m);
         return NULL;
@@ -158,7 +158,7 @@ static off_t* consolidate_byteranges(off_t* zbyterange, int* num) {
      * allocation to the actual number of ranges it contains */
     *num = k;
     if (k > 0) {
-        zbyterange = realloc(zbyterange, 2 * k * sizeof *zbyterange);
+        zbyterange = (off_t*) realloc(zbyterange, 2 * k * sizeof *zbyterange);
     }
     return zbyterange;
 }
@@ -273,7 +273,7 @@ off_t *zmap_to_compressed_ranges(const struct zmap *zm, off_t * byterange,
     /* Allocate enough space to contain the byte ranges in the compressed file.
      * Allocate more than we need and shrink to fit at the end -
      *  2 byte ranges (of 2 off_t each) per range is the limit. */
-    off_t *zbyterange = malloc(2 * 2 * nrange * sizeof *byterange);
+    off_t *zbyterange = (off_t*) malloc(2 * 2 * nrange * sizeof *byterange);
     int k = 0; /* The number of zbyterange entries we actually have so far (each of 2 off_t) */
 
     for (i = 0; i < nrange; i++) {

@@ -431,7 +431,7 @@ int rcksum_submit_source_file(struct rcksum_state *z, FILE * f, int progress) {
 
     /* Allocate buffer of 16 blocks */
     register int bufsize = z->blocksize * 16;
-    unsigned char *buf = malloc(bufsize + z->context);
+    unsigned char *buf = (unsigned char*) malloc(bufsize + z->context);
     if (!buf)
         return 0;
 

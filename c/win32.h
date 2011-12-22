@@ -85,20 +85,34 @@ int mkstemp (char *tmpl);
 #define EINVAL          22
 #endif
 
-#define _O_RDWR			0x0002
-#define O_RDWR			_O_RDWR
+#ifndef _O_RDWR
+#  define _O_RDWR			0x0002
+#  define O_RDWR			_O_RDWR
+#endif
 
-#define _O_CREAT		0x0100
-#define O_CREAT			_O_CREAT
+#ifndef _O_CREAT
+#  define _O_CREAT		0x0100
+#  define O_CREAT			_O_CREAT
+#endif
 
-#define _O_EXCL         0x0400
-#define O_EXCL          _O_EXCL
+#ifndef _O_EXCL
+#  define _O_EXCL         0x0400
+#  define O_EXCL          _O_EXCL
+#endif
 
 //#define _S_IREAD        0000400         /* read permission, owner */
 //#define _S_IWRITE       0000200         /* write permission, owner */
-#define S_IREAD			_S_IREAD
-#define S_IWRITE		_S_IWRITE
+#ifndef S_IREAD
+#  define S_IREAD			_S_IREAD
+#endif
 
+#ifndef S_IWRITE
+#  define S_IWRITE		_S_IWRITE
+#endif
+
+#ifndef R_OK
+#  define R_OK 4
+#endif
 
 /*********************************************************************
  *********************************************************************

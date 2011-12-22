@@ -183,8 +183,11 @@
 
 #ifdef _MSC_VER
 #define inline _inline
-#define snprintf _snprintf
-#define popen _popen
+//#define snprintf _snprintf
+//#define popen _popen
+//#define close _close
+//#define write _write
+//#define lseek _lseek
 #endif
 
 #  define WIN32_LEAN_AND_MEAN

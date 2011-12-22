@@ -42,7 +42,7 @@ struct rcksum_state *rcksum_init(zs_blockid nblocks, size_t blocksize,
                                  int rsum_bytes, int checksum_bytes,
                                  int require_consecutive_matches) {
     /* Allocate memory for the object */
-    struct rcksum_state *z = malloc(sizeof(struct rcksum_state));
+    struct rcksum_state *z = (struct rcksum_state*) malloc(sizeof(struct rcksum_state));
     if (z == NULL) return NULL;
 
     /* Enter supplied properties. */
@@ -88,7 +88,7 @@ struct rcksum_state *rcksum_init(zs_blockid nblocks, size_t blocksize,
                     }
             }
 
-            z->blockhashes =
+            z->blockhashes = 
                 malloc(sizeof(z->blockhashes[0]) *
                         (z->blocks + z->seq_matches));
             if (z->blockhashes != NULL)

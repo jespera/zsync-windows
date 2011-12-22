@@ -456,67 +456,6 @@ struct tm *gmtime_r (const time_t *timep, struct tm *result)
 // (http://www.hercules-390.org/herclic.html) as modifications to Hercules.
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#if defined(DEBUG) || defined(_DEBUG)
-
-  #ifdef _MSC_VER
-
-    #define TRACE(...) \
-      do \
-      { \
-        IsDebuggerPresent() ? DebugTrace (__VA_ARGS__): \
-                              logmsg     (__VA_ARGS__); \
-      } \
-      while (0)
-
-    #undef ASSERT /* For VS9 2008 */
-    #define ASSERT(a) \
-      do \
-      { \
-        if (!(a)) \
-        { \
-          TRACE("HHCxx999W *** Assertion Failed! *** %s(%d); function: %s\n",__FILE__,__LINE__,__FUNCTION__); \
-          if (IsDebuggerPresent()) DebugBreak();   /* (break into debugger) */ \
-        } \
-      } \
-      while(0)
-
-  #else // ! _MSC_VER
-
-    #define TRACE logmsg
-
-    #define ASSERT(a) \
-      do \
-      { \
-        if (!(a)) \
-        { \
-          TRACE("HHCxx999W *** Assertion Failed! *** %s(%d)\n",__FILE__,__LINE__); \
-        } \
-      } \
-      while(0)
-
-  #endif // _MSC_VER
-
-  #define VERIFY  ASSERT
-
-#else // non-debug build...
-
-  #ifdef _MSVC_
-
-    #define TRACE       __noop
-    #undef ASSERT /* For VS9 2008 */
-    #define ASSERT(a)   __noop
-    #define VERIFY(a)   ((void)(a))
-
-  #else // ! _MSVC_
-
-    #define TRACE       1 ? ((void)0) : logmsg
-    #define ASSERT(a)
-    #define VERIFY(a)   ((void)(a))
-
-  #endif // _MSVC_
-
-#endif
-
 SOCKET PASCAL w32_socket( int af, int type, int protocol )
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -640,8 +579,6 @@ FILE* w32_fdopen( int their_fd, const char* their_mode )
         { NULL, NULL, 0 }
     };
 
-    ASSERT( their_mode );
-
     // (we're only interested in socket calls)
 
     if ( !socket_is_socket( their_fd ) )
@@ -684,8 +621,6 @@ int w32_fclose ( FILE* stream )
 {
     int sd, rc, err;
     SOCKET sock;
-
-    ASSERT( stream );
 
     sd = fileno( stream );
 

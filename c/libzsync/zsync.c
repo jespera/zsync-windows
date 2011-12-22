@@ -134,7 +134,7 @@ static time_t parse_822(const char* ts);
 static char **append_ptrlist(int *n, char **p, char *a) {
     if (!a)
         return p;
-    p = realloc(p, (*n + 1) * sizeof *p);
+    p = (char**) realloc(p, (*n + 1) * sizeof *p);
     if (!p) {
         fprintf(stderr, "out of memory\n");
         exit(1);
@@ -158,7 +158,7 @@ struct zsync_state *zsync_begin(FILE * f) {
     char *safelines = NULL;
 
     /* Allocate memory for the object */
-    struct zsync_state *zs = calloc(sizeof *zs, 1);
+    struct zsync_state *zs = (struct zsync_state*) calloc(sizeof *zs, 1);
 
     if (!zs)
         return NULL;
@@ -245,7 +245,7 @@ struct zsync_state *zsync_begin(FILE * f) {
                     return NULL;
                 }
 
-                zblock = malloc(nzblocks * sizeof *zblock);
+                zblock = (struct gzblock*) malloc(nzblocks * sizeof *zblock);
                 if (zblock) {
                     if (fread(zblock, sizeof *zblock, nzblocks, f) < nzblocks) {
                         fprintf(stderr, "premature EOF after Z-Map\n");
@@ -474,7 +474,7 @@ off_t *zsync_needed_byte_ranges(struct zsync_state * zs, int *num, int type) {
         return NULL;
 
     /* Allocate space for byte ranges */
-    byterange = malloc(2 * nrange * sizeof *byterange);
+    byterange = (off_t*) malloc(2 * nrange * sizeof *byterange);
     if (!byterange) {
         free(blrange);
         return NULL;

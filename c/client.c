@@ -36,6 +36,10 @@
 # include <dmalloc.h>
 #endif
 
+#ifdef _MSC_VER
+#  include "msvc-getopt.h"
+#endif
+
 #include "libzsync/zsync.h"
 
 #include "http.h"

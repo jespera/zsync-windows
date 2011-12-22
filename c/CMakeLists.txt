@@ -201,17 +201,21 @@ include_directories(librcksum zlib libzsync ${zsync_SOURCE_DIR})
 
 if(WIN32)
   set(WIN32_SOURCES win32.h win32.c)
+  if(MSVC)
+    set(WIN32_SOURCES msvc-getopt.h msvc-getopt.c ${WIN32_SOURCES})
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
+  endif(MSVC)
 endif(WIN32)
 
 add_executable(zsyncmake make.c makegz.c makegz.h format_string.h ${WIN32_SOURCES})
-target_link_libraries(zsyncmake zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
+target_link_libraries(zsyncmake ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
 
 if(NOT HAVE_GETADDRINFO)
   set(GETTADDRINFO_SOURCES getaddrinfo.h getaddrinfo.c)
 endif(NOT HAVE_GETADDRINFO)
 
 add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
-target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
+target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
 
 # TODO
 # install(FILES COPYING README INSTALL check-zsyncmake)

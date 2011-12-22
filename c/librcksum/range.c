@@ -98,7 +98,7 @@ void add_to_ranges(struct rcksum_state *rs, zs_blockid x) {
         }
 
         else { /* New range for this block alone */
-            rs->ranges =
+            rs->ranges = (zs_blockid*)
                 realloc(rs->ranges,
                         (rs->numranges + 1) * 2 * sizeof(rs->ranges[0]));
             memmove(&rs->ranges[2 * r + 2], &rs->ranges[2 * r],
@@ -147,7 +147,7 @@ zs_blockid *rcksum_needed_block_ranges(const struct rcksum_state * rs, int *num,
                                        zs_blockid from, zs_blockid to) {
     int i, n;
     int alloc_n = 100;
-    zs_blockid *r = malloc(2 * alloc_n * sizeof(zs_blockid));
+    zs_blockid *r = (zs_blockid*) malloc(2 * alloc_n * sizeof(zs_blockid));
 
     if (!r)
         return NULL;
@@ -184,7 +184,7 @@ zs_blockid *rcksum_needed_block_ranges(const struct rcksum_state * rs, int *num,
                 if (n == alloc_n) {
                     zs_blockid *r2;
                     alloc_n += 100;
-                    r2 = realloc(r, 2 * alloc_n * sizeof *r);
+                    r2 = (zs_blockid*) realloc(r, 2 * alloc_n * sizeof *r);
                     if (!r2) {
                         free(r);
                         return NULL;
@@ -194,7 +194,7 @@ zs_blockid *rcksum_needed_block_ranges(const struct rcksum_state * rs, int *num,
             }
         }
     }
-    r = realloc(r, 2 * n * sizeof *r);
+    r = (zs_blockid*) realloc(r, 2 * n * sizeof *r);
     if (n == 1 && r[0] >= r[1])
         n = 0;
 
