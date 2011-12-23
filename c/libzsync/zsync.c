@@ -939,7 +939,7 @@ static int zsync_receive_data_compressed(struct zsync_receiver *zr,
 
     if (zr->strm.total_in == 0 || offset != zr->strm.total_in) {
         zsync_configure_zstream_for_zdata(zr->zs, &(zr->strm), offset,
-#ifdef _MSC_VER
+#ifdef __cplusplus
                                           &((long long&)(zr->outoffset)));
 #else
                                           &(zr->outoffset));

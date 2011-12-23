@@ -2,6 +2,8 @@ project(zsync C)
 
 cmake_minimum_required(VERSION 2.8)
 
+add_subdirectory(dummy)
+
 set(PACKAGE_BUGREPORT "http://zsync.moria.org.uk/")
 set(PACKAGE_NAME "zsync")
 set(PACKAGE_VERSION "0.6.2")
@@ -207,14 +209,22 @@ if(WIN32)
   endif(MSVC)
 endif(WIN32)
 
-add_executable(zsyncmake make.c makegz.c makegz.h format_string.h ${WIN32_SOURCES})
+set(zsyncmake_SRCS make.c makegz.c makegz.h format_string.h ${WIN32_SOURCES})
+if(MSVC)
+  set_source_files_properties(${zsyncmake_SRCS} PROPERTIES LANGUAGE CXX)
+endif(MSVC)
+add_executable(zsyncmake ${zsyncmake_SRCS})
 target_link_libraries(zsyncmake ${SOCKET_LIBRARY} rcksum inflate deflate zsynclib ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
 
 if(NOT HAVE_GETADDRINFO)
   set(GETTADDRINFO_SOURCES getaddrinfo.h getaddrinfo.c)
 endif(NOT HAVE_GETADDRINFO)
 
-add_executable(zsync client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
+set(zsync_SRCS client.c http.c http.h url.c url.h progress.c progress.h base64.c format_string.h zsglobal.h ${GETADDRINFO_SOURCES} ${WIN32_SOURCES})
+if(MSVC)
+  set_source_files_properties(${zsync_SRCS} PROPERTIES LANGUAGE CXX)
+endif(MSVC)
+add_executable(zsync ${zsync_SRCS})
 target_link_libraries(zsync zsynclib ${SOCKET_LIBRARY} rcksum inflate deflate ${MATH_LIBRARY} ${DMALLOC_LIBRARIES})
 
 # TODO

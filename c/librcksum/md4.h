@@ -16,6 +16,10 @@
 #ifndef _MD4_H_
 #define _MD4_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "zsglobal.h"
 
 #ifdef HAVE_INTTYPES_H
@@ -54,5 +58,9 @@ char	*MD4FileChunk(const char *, char *, off_t, off_t)
 char	*MD4Data(const uint8_t *, size_t, char *)
 		ZS_DECL_BOUNDED(__string__,1,2)
 		ZS_DECL_BOUNDED(__minbytes__,3,MD4_DIGEST_STRING_LENGTH);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _MD4_H_ */
