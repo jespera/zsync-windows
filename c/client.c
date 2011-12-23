@@ -23,14 +23,23 @@
 #include <string.h>
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#  include <unistd.h>
+#else
+#  define F_OK 0
 #endif
+
 #include <fcntl.h>
 #include <errno.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <utime.h>
+
+//#ifdef HAVE_UTIME_H
+#ifdef _MSC_VER
+#  include <sys/utime.h>
+#else
+#  include <utime.h>
+#endif
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
@@ -38,6 +47,8 @@
 
 #ifdef _MSC_VER
 #  include "msvc-getopt.h"
+#  include <io.h>
+#  include <process.h>
 #endif
 
 #include "libzsync/zsync.h"
@@ -55,7 +66,7 @@
 FILE* open_zcat_pipe(const char* fname)
 {
     /* Get buffer to build command line */
-    char *cmd = malloc(6 + strlen(fname) * 2);
+    char *cmd = (char*) malloc(6 + strlen(fname) * 2);
     if (!cmd)
         return NULL;
 
@@ -155,12 +166,12 @@ long long http_down;
 static char **append_ptrlist(int *n, char **p, void *a) {
     if (!a)
         return p;
-    p = realloc(p, (*n + 1) * sizeof *p);
+    p = (char**) realloc(p, (*n + 1) * sizeof *p);
     if (!p) {
         fprintf(stderr, "out of memory\n");
         exit(1);
     }
-    p[*n] = a;
+    p[*n] = (char*) a;
     (*n)++;
     return p;
 }
@@ -324,7 +335,7 @@ int fetch_remaining_blocks_http(struct zsync_state *z, const char *url,
         fprintf(stderr, "downloading from %s:", u);
 
     /* Create a read buffer */
-    buf = malloc(BUFFERSIZE);
+    buf = (unsigned char*) malloc(BUFFERSIZE);
     if (!buf) {
         zsync_end_receive(zr);
         range_fetch_end(rf);
@@ -407,7 +418,7 @@ int fetch_remaining_blocks(struct zsync_state *zs) {
         fprintf(stderr, "no URLs available from zsync?");
         return 1;
     }
-    status = calloc(n, sizeof *status);
+    status = (int*) calloc(n, sizeof *status);
 
     /* Keep going until we're done or have no useful URLs left */
     while (zsync_status(zs) < 2 && ok_urls) {
@@ -565,7 +576,7 @@ int main(int argc, char **argv) {
     /* Get eventual filename for output, and filename to write to while working */
     if (!filename)
         filename = get_filename(zs, argv[optind]);
-    temp_file = malloc(strlen(filename) + 6);
+    temp_file = (char*) malloc(strlen(filename) + 6);
     strcpy(temp_file, filename);
     strcat(temp_file, ".part");
 
@@ -668,7 +679,7 @@ int main(int argc, char **argv) {
 
     /* STEP 5: Move completed .part file into place as the final target */
     if (filename) {
-        char *oldfile_backup = malloc(strlen(filename) + 8);
+        char *oldfile_backup = (char*) malloc(strlen(filename) + 8);
         int ok = 1;
 
         strcpy(oldfile_backup, filename);

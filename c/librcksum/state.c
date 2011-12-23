@@ -32,6 +32,10 @@
 # include <dmalloc.h>
 #endif
 
+#ifdef _MSC_VER
+#  include <io.h>
+#endif
+
 #include "rcksum.h"
 #include "internal.h"
 
@@ -88,7 +92,7 @@ struct rcksum_state *rcksum_init(zs_blockid nblocks, size_t blocksize,
                     }
             }
 
-            z->blockhashes = 
+            z->blockhashes = (struct hash_entry*)
                 malloc(sizeof(z->blockhashes[0]) *
                         (z->blocks + z->seq_matches));
             if (z->blockhashes != NULL)

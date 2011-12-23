@@ -46,12 +46,16 @@
 #include <ctype.h>
 #include <time.h>
 
-#ifndef WIN32
+#ifndef _WIN32
 # include <arpa/inet.h>
 #endif
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
+#endif
+
+#ifdef _MSC_VER
+#  include <io.h>
 #endif
 
 #include "zlib/zlib.h"
@@ -829,13 +833,13 @@ struct zsync_receiver {
 
 /* Constructor */
 struct zsync_receiver *zsync_begin_receive(struct zsync_state *zs, int url_type) {
-    struct zsync_receiver *zr = malloc(sizeof(struct zsync_receiver));
+    struct zsync_receiver *zr = (struct zsync_receiver*) malloc(sizeof(struct zsync_receiver));
 
     if (!zr)
         return NULL;
     zr->zs = zs;
 
-    zr->outbuf = malloc(zs->blocksize);
+    zr->outbuf = (unsigned char*) malloc(zs->blocksize);
     if (!zr->outbuf) {
         free(zr);
         return NULL;
@@ -930,12 +934,16 @@ static int zsync_receive_data_compressed(struct zsync_receiver *zr,
         return 0;
 
     /* Now set up for the downloaded block */
-    zr->strm.next_in = buf;
+    zr->strm.next_in = (Bytef*) buf;
     zr->strm.avail_in = len;
 
     if (zr->strm.total_in == 0 || offset != zr->strm.total_in) {
         zsync_configure_zstream_for_zdata(zr->zs, &(zr->strm), offset,
+#ifdef _MSC_VER
+                                          &((long long&)(zr->outoffset)));
+#else
                                           &(zr->outoffset));
+#endif
 
         /* On first iteration, we might be reading an incomplete block from zsync's point of view. Limit avail_out so we can stop after doing that and realign with the buffer. */
         zr->strm.avail_out = blocksize - (zr->outoffset % blocksize);
@@ -947,7 +955,7 @@ static int zsync_receive_data_compressed(struct zsync_receiver *zr,
                     "data didn't align with block boundary in compressed stream\n");
             return 1;
         }
-        zr->strm.next_in = buf;
+        zr->strm.next_in = (Bytef*) buf;
         zr->strm.avail_in = len;
     }
 

@@ -25,6 +25,10 @@
 #include <string.h>
 #include <errno.h>
 
+#ifdef _MSC_VER
+#  include <io.h>
+#endif
+
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif

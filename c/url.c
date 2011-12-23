@@ -43,7 +43,7 @@ char *get_http_host_port(const char *url, char *hostn, int hnlen, char **port) {
     if (memcmp(url, http_scheme, strlen(http_scheme)))
         return NULL;
 
-    q = url + strlen(http_scheme);
+    q = (char*)url + strlen(http_scheme);
 
     p = strchr(q, ':');
     if (p) {                    /* if : is after the first /, we have looked too far ahead */
@@ -69,7 +69,7 @@ char *get_http_host_port(const char *url, char *hostn, int hnlen, char **port) {
         q = p;
         p = strchr(p, '/');
         l = p ? (size_t) (p - q - 1) : strlen(q) - 1;
-        *port = malloc(l + 1);
+        *port = (char*) malloc(l + 1);
         if (!*port)
             return NULL;
         memcpy(*port, q + 1, l);
@@ -112,7 +112,7 @@ char * PURE_FUNCTION make_url_absolute(const char *base, const char *url) {
             return NULL;
 
         /* Append full path to the base http://hostname */
-        newurl = malloc(l + strlen(url) + 1);
+        newurl = (char*) malloc(l + strlen(url) + 1);
         memcpy(newurl, base, l);
         strcpy(newurl + l, url);
         return newurl;
@@ -138,7 +138,7 @@ char * PURE_FUNCTION make_url_absolute(const char *base, const char *url) {
 
         /* Take the base URL up to and including the last /, and append the relative URL */
         l = q - base + 1;
-        newurl = malloc(l + strlen(url) + 1);
+        newurl = (char*) malloc(l + strlen(url) + 1);
         memcpy(newurl, base, l);
         strcpy(newurl + l, url);
         return newurl;

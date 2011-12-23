@@ -45,7 +45,7 @@ char * base64(const char *src)
 	int t, r;
 
 	l = strlen(src);
-	if ((str = malloc(((l + 2) / 3) * 4 + 1)) == NULL)
+	if ((str = (char*) malloc(((l + 2) / 3) * 4 + 1)) == NULL)
 		return (NULL);
 	dst = str;
 	r = 0;

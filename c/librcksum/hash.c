@@ -70,7 +70,7 @@ int build_hash(struct rcksum_state *z) {
 
     /* Allocate hash based on rsum */
     z->hashmask = (2 << i) - 1;
-    z->rsum_hash = calloc(z->hashmask + 1, sizeof *(z->rsum_hash));
+    z->rsum_hash = (struct hash_entry**) calloc(z->hashmask + 1, sizeof *(z->rsum_hash));
     if (!z->rsum_hash)
         return 0;
 

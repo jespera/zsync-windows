@@ -23,6 +23,9 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
 
+/* Define to 1 if you have the <utime.h> header file. */
+#cmakedefine HAVE_UTIME_H 1
+
 /* Define to 1 if you have the `mkstemp' function. */
 #cmakedefine HAVE_MKSTEMP 1
 
@@ -183,11 +186,20 @@
 
 #ifdef _MSC_VER
 #define inline _inline
-//#define snprintf _snprintf
-//#define popen _popen
-//#define close _close
-//#define write _write
-//#define lseek _lseek
+#define snprintf _snprintf
+#define popen _popen
+#define pclose _pclose
+#define close _close
+#define write _write
+#define lseek _lseek
+#define read _read
+#define atoll _atoi64
+#define ftruncate _chsize
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define access _access
+#define getpid _getpid
+#define isatty _isatty
 #endif
 
 #  define WIN32_LEAN_AND_MEAN

@@ -16,6 +16,13 @@
 
 /* This is the library interface. Very changeable at this stage. */
 
+#ifndef RCKSUM_H
+#define RCKSUM_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef HAVE_CONFIG_H
 #  include "config.h"
 #endif
@@ -65,3 +72,8 @@ int rcksum_blocks_todo(const struct rcksum_state*);
 struct rsum PURE_FUNCTION rcksum_calc_rsum_block(const unsigned char* data, size_t len);
 void rcksum_calc_checksum(unsigned char *c, const unsigned char* data, size_t len);
 
+#ifdef __cplusplus
+}
+#endif
+
+#endif

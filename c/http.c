@@ -56,6 +56,9 @@
 # include <netdb.h>
 #endif
 
+#ifdef _MSC_VER
+#  include <io.h>
+#endif
 
 /* socket = connect_to(host, service/port)
  * Establishes a TCP connection to the named host and port (which can be
@@ -176,7 +179,7 @@ char *referer;
 int set_proxy_from_string(const char *s) {
     if (!memcmp(s, http_scheme, strlen(http_scheme))) {
         /* http:// style proxy string */
-        proxy = malloc(256);
+        proxy = (char*) malloc(256);
         if (!proxy)
             return 0;
         if (!get_http_host_port(s, proxy, 256, &pport))
@@ -206,7 +209,8 @@ int set_proxy_from_string(const char *s) {
  */
 void add_auth(char *host, char *user, char *pass) {
     auth_details =
-        realloc(auth_details, (num_auth_details + 1) * sizeof *auth_details);
+        (char**) realloc(auth_details, (num_auth_details + 1) * sizeof *auth_details);
+
     auth_details[num_auth_details * 3] = host;
     auth_details[num_auth_details * 3 + 1] = user;
     auth_details[num_auth_details * 3 + 2] = pass;
@@ -234,13 +238,13 @@ static char *get_auth_hdr(const char *hn) {
 
             /* Store unencoded user:pass */
             size_t l = strlen(u) + strlen(p) + 2;
-            char *w = malloc(l);
+            char *w = (char*) malloc(l);
             snprintf(w, l, "%s:%s", u, p);
 
             /* Now base64-encode that, and compose the header */
             b = base64(w);
             l = strlen(b) + strlen(auth_header_tmpl) + 1;
-            header = malloc(l);
+            header = (char*) malloc(l);
             snprintf(header, l, auth_header_tmpl, b);
 
             /* And clean up */
@@ -284,7 +288,7 @@ FILE *http_get(const char *orig_url, char **track_referer, const char *tfname) {
 
         /* Construct the name of the incomplete transfer file that would have
          * been used by a previous transfer */
-        fname = malloc(strlen(tfname) + 6);
+        fname = (char*) malloc(strlen(tfname) + 6);
         strcpy(fname, tfname);
         strcat(fname, ".part");
 
@@ -636,7 +640,7 @@ static char *rfgets(char *buf, size_t len, struct range_fetch *rf) {
     char *p;
     while (1) {
         /* Look for a line end in the in buffer */
-        p = memchr(rf->buf + rf->buf_start, '\n', rf->buf_end - rf->buf_start);
+        p = (char*) memchr(rf->buf + rf->buf_start, '\n', rf->buf_end - rf->buf_start);
 
         /* If we don't have the end of the line yet, fetch more data into the
          * buffer (and go around again) */
@@ -672,7 +676,7 @@ static char *rfgets(char *buf, size_t len, struct range_fetch *rf) {
  * Returns a new range fetch object, for the given URL.
  */
 struct range_fetch *range_fetch_start(const char *orig_url) {
-    struct range_fetch *rf = malloc(sizeof(struct range_fetch));
+    struct range_fetch *rf = (struct range_fetch*) malloc(sizeof(struct range_fetch));
     if (!rf)
         return NULL;
 
@@ -715,7 +719,7 @@ void range_fetch_addranges(struct range_fetch *rf, off_t * ranges, int nranges) 
     int existing_ranges = rf->nranges - rf->rangesdone;
 
     /* Allocate new memory, enough for valid existing entries and new entries */
-    off_t *nr = malloc(2 * sizeof(*ranges) * (nranges + existing_ranges));
+    off_t *nr = (off_t*) malloc(2 * sizeof(*ranges) * (nranges + existing_ranges));
     if (!nr)
         return;
 

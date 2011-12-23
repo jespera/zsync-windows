@@ -9,6 +9,10 @@
 #ifndef _SHA1_H
 #define _SHA1_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "config.h"
 
 #ifdef HAVE_INTTYPES_H
@@ -61,5 +65,9 @@ char *SHA1Data(const uint8_t *, size_t, char *)
         x[2] = ntohl(x[2]);                                             \
         x[3] = ntohl(x[3]);                                             \
         x[4] = ntohl(x[4]); } while (0)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _SHA1_H */
