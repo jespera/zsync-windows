@@ -6,6 +6,7 @@ add_definitions(${ZSCFLAGS} -DHAVE_CONFIG_H)
 
 set(zsynclib_SRCS zmap.h zsync.h sha1.h zsync.c zmap.c sha1.c)
 if(MSVC)
+  enable_language(CXX)
   set_source_files_properties(${zsynclib_SRCS} PROPERTIES LANGUAGE CXX)
 endif(MSVC)
 add_library(zsynclib STATIC ${zsynclib_SRCS})

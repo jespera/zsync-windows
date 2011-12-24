@@ -2,8 +2,6 @@ project(zsync C)
 
 cmake_minimum_required(VERSION 2.8)
 
-add_subdirectory(dummy)
-
 set(PACKAGE_BUGREPORT "http://zsync.moria.org.uk/")
 set(PACKAGE_NAME "zsync")
 set(PACKAGE_VERSION "0.6.2")
@@ -211,6 +209,7 @@ endif(WIN32)
 
 set(zsyncmake_SRCS make.c makegz.c makegz.h format_string.h ${WIN32_SOURCES})
 if(MSVC)
+  enable_language(CXX)
   set_source_files_properties(${zsyncmake_SRCS} PROPERTIES LANGUAGE CXX)
 endif(MSVC)
 add_executable(zsyncmake ${zsyncmake_SRCS})

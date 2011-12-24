@@ -7,6 +7,7 @@ add_definitions(${ZSCFLAGS} -DHAVE_CONFIG_H)
 set(rcksum_SRCS internal.h rcksum.h md4.h rsum.c hash.c state.c range.c md4.c)
 
 if(MSVC)
+  enable_language(CXX)
   set_source_files_properties(${rcksum_SRCS} PROPERTIES LANGUAGE CXX)
 endif(MSVC)
 
