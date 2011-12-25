@@ -209,7 +209,7 @@ int set_proxy_from_string(const char *s) {
  */
 void add_auth(char *host, char *user, char *pass) {
     auth_details =
-        (char**) realloc(auth_details, (num_auth_details + 1) * sizeof *auth_details);
+        (char**) realloc(auth_details, (num_auth_details + 1) * 3 * sizeof *auth_details);
 
     auth_details[num_auth_details * 3] = host;
     auth_details[num_auth_details * 3 + 1] = user;
