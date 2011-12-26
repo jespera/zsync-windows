@@ -258,22 +258,22 @@ static int check_checksums_on_hash_chain(struct rcksum_state *const z,
                 /* Find the next block that we already have data for. If this
                  * is part of a run of matches then we have this stored already
                  * as ->next_known. */
-                zs_blockid next_known = onlyone ? z->next_known : next_known_block(z, id);
+                zs_blockid next_known_with_data = onlyone ? z->next_known : next_known_block(z, id);
 
                 z->stats.stronghit += check_md4;
 
-                if (next_known > id + check_md4) {
+                if (next_known_with_data > id + check_md4) {
                     num_write_blocks = check_md4;
 
                     /* Save state for this run of matches */
                     z->next_match = &(z->blockhashes[id + check_md4]);
-                    if (!onlyone) z->next_known = next_known;
+                    if (!onlyone) z->next_known = next_known_with_data;
                 }
                 else {
                     /* We've reached the EOF, or data we already know. Just
                      * write out the blocks we don't know, and that's the end
                      * of this run of matches. */
-                    num_write_blocks = next_known - id;
+                    num_write_blocks = next_known_with_data - id;
                 }
 
                 /* Write out the matched blocks that we don't yet know */
