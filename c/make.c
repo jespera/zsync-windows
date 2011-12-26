@@ -892,7 +892,19 @@ int main(int argc, char **argv) {
 
                 TIME_ZONE_INFORMATION info;
                 GetTimeZoneInformation(&info);
-                int bias = - info.Bias + info.DaylightBias; // Difference to UTC + DST
+
+                int bias = - info.Bias; // Difference to UTC + DST
+
+                SYSTEMTIME standardDate = info.StandardDate;
+
+                if(0 != standardDate.wMonth) { // Per TIME_ZONE_INFORMATION documentation (see StandardDate)
+                    bias += info.StandardBias;
+                    SYSTEMTIME daylightDate = info.DaylightDate;
+                    if( 0 != daylightDate.wMonth ) { // Per TIME_ZONE_INFORMATION documentation (see DaylightDate)
+                        bias += info.DaylightBias;
+                    }
+                }
+
                 int hh = bias / 60;
                 int mm = bias % 60; /* warning: modulus operation with negative numbers is not portable */
 
