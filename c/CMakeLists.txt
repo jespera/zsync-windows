@@ -36,6 +36,8 @@ if(WITH_LARGE_FILE_SUPPORT)
 
   if(_FILE_OFFSET_BITS)
     set(ZSCFLAGS ${ZSCFLAGS} -D_FILE_OFFSET_BITS=${_FILE_OFFSET_BITS})
+  else(_FILE_OFFSET_BITS)
+    message(WARNING "Warning! This build will NOT work properly with > 2 GB files")
   endif(_FILE_OFFSET_BITS)
 
   if(_LARGEFILE_SOURCE)
