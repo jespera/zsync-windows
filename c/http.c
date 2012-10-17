@@ -616,6 +616,12 @@ static int get_more_data(struct range_fetch *rf) {
     {   /* Read as much as the OS wants to give us, up to a limit of filling
          * the rest of the buffer; ignore EINTR. */
         int n;
+        
+        int recvflag = 0; /* Windows XP does not support MSG_WAITALL - http://msdn.microsoft.com/en-us/library/windows/desktop/ms740121(v=vs.85).aspx */
+        if( isWindowsVistaOrLater() ) {
+            recvflag = MSG_WAITALL;
+        }
+        
         do {
             n = recv(rf->sd, &(rf->buf[rf->buf_end]),
                      sizeof(rf->buf) - rf->buf_end, MSG_WAITALL);
