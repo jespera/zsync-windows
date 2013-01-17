@@ -839,6 +839,20 @@ static void buflwr(char *s) {
     }
 }
 
+char *skip_empty_lines(char *buf, size_t len, struct range_fetch *rf) {
+	while(1) {
+		rfgets(buf, len, rf);
+		if(buf == NULL || buf[0] == 0) {
+			return NULL;
+		}
+		if(buf[0] == '\r' && buf[1] == '\n') {
+			continue;
+		}
+		break;
+	}
+	return buf;
+}
+
 /* range_fetch_read_http_headers - read a set of HTTP headers, updating state
  * appropriately.
  * Returns: EOF returns 0, good returns 206 (reading a range block) or 30x
@@ -851,14 +865,19 @@ int range_fetch_read_http_headers(struct range_fetch *rf) {
     {                           /* read status line */
         char *p;
 
-        if (rfgets(buf, sizeof(buf), rf) == NULL)
-            return -1;
-        if (buf[0] == 0)
-            return 0;           /* EOF, caller decides if that's an error */
-        if (memcmp(buf, "HTTP/1", 6) != 0 || (p = strchr(buf, ' ')) == NULL) {
-            fprintf(stderr, "got non-HTTP response '%s'\n", buf);
-            return -1;
-        }
+				// skip empty CRLF lines
+				skip_empty_lines(buf, sizeof(buf), rf);
+				if(buf == NULL) {
+					fprintf(stderr, "got unexpected HTTP response '%s'\n", buf);
+					return -1;
+				}
+				if (memcmp(buf, "HTTP/1", 6) == 0) {
+					p = strchr(buf, ' ');
+					if(p == NULL) {
+           	fprintf(stderr, "got non-HTTP response '%s'\n", buf);
+						return -1;
+					}
+				} 
         status = atoi(p + 1);
         if (status != 206 && status != 301 && status != 302) {
             if (status >= 300 && status < 400) {
@@ -1066,6 +1085,7 @@ int get_range_block(struct range_fetch *rf, off_t * offset, unsigned char *data,
             /* HTTP Pipelining - send next request before reading current response */
             if (!rf->server_close)
                 range_fetch_getmore(rf);
+
         }
 
         /* Okay, if we're (now) reading a MIME boundary */
@@ -1073,14 +1093,14 @@ int get_range_block(struct range_fetch *rf, off_t * offset, unsigned char *data,
             /* Throw away blank line */
             char buf[512];
             int gotr = 0;
-            if (!rfgets(buf, sizeof(buf), rf))
-                return 0;
+            //if (!rfgets(buf, sizeof(buf), rf))
+              //  return 0;
 
             /* Get, hopefully, boundary marker line */
-            if (!rfgets(buf, sizeof(buf), rf))
-                return 0;
-            if (buf[0] != '-' || buf[1] != '-')
-                return 0;
+						skip_empty_lines(buf, sizeof(buf), rf);
+						if(buf[0] != '-' && buf[1] != '-') {
+							return 0;
+						}
 
             if (memcmp(&buf[2], rf->boundary, strlen(rf->boundary))) {
                 fprintf(stderr, "got bad block boundary: %s != %s",
